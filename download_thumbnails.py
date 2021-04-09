@@ -25,11 +25,11 @@ for dic_t in jsonList:
 		file_name_to_write = "{}{}".format("thumbnail",c)
 		open(file_name_to_write, 'wb').write(r.content)
 	except Exception as e:
-		print("failed")
+		print("{}{}".fomat("failed, here is the iteration", c))
 		raise e
 	c = c+1
 
-
+#idea. Json can also be avoided, and just use python dict I think.... This would simplify the code tremendously
 #consider: Some objects may have not the expected values.
 # Test this! If it occurs, this incidence should not confound the correct chronological order. Just jump to the next one.
 

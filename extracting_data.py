@@ -18,16 +18,18 @@ class Entry: # Stores a single Video. information [title, url thumbnail] is adde
 	title = ""
 	url = ""
 	thumbnail = ""
+	def __str__(self):
+		return "Title: {} Url:  {}".format(self.title, self.url)
 
 	def extractYoutubeIdFromUrl(self):
 		failed = False
 		try:
-			url_data = urlparse.urlparse(self.url)
+			url_data = urlib3.parse_url.urlib3.parse_url(self.url)
 		except Exception as e:
 			failed = True
 	
 		try:
-			query = urlparse.parse_qs(url_data.query)
+			query = urlib3.parse_url.parse_qs(url_data.query)
 		except Exception as e:
 			failed = True
 		
@@ -74,7 +76,8 @@ def createObjects(filename): # create the array Of "json objects"
 			if not failed:
 				entry = Entry(title, url)
 				#my_objects.append(entr)
-				print(json.dumps(vars(entry)))
+				#print(entry)
+				print(vars(entry)) #not working, why
 	print("}") #close the json object
 
 
