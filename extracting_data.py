@@ -1,24 +1,90 @@
-#!/home/cyrill/anaconda3/bin/python
-#TOD: 
-# for each object, download the imgage to foler. 
-			# the only problem will be to accounf for irregularities, that is, dead links and things like that. 
-			# but this will be quite easy.
+#!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
+
 import urlparse
+import json
+import re
 
 from bs4 import BeautifulSoup
 
-filename = '../verlauf/verlauf_trimmed.html'
+verlauf_trimmed = '../verlauf/verlauf_trimmed.html'
 
-test_filename_div = '../verlauf/test.html'
-link_file = 'links.txt'
+test_filename_div = '../verlauf/test_filename_div.html'
+link_file = 'link_file.txt'
 my_objects = []
 
+
+
+class Entry: # Stores a single Video. information [title, url thumbnail] is added to attributes.
+	title = ""
+	url = ""
+	thumbnail = ""
+
+	def extractYoutubeIdFromUrl(self):
+		failed = False
+		try:
+			url_data = urlparse.urlparse(self.url)
+		except Exception as e:
+			failed = True
+	
+		try:
+			query = urlparse.parse_qs(url_data.query)
+		except Exception as e:
+			failed = True
+		
+		try:
+			yt_id = query["v"][0]
+		except Exception as e:
+			failed = True
+		if not failed:
+			return yt_id
+		else:
+			return "ID_extraction_Failed"
+
+	def __init__(self, title, url):
+
+		title = title.replace('\n','')
+		title =  re.sub(' +', ' ', title) # remove whitspace in the middle
+		self.title = ''.join(title).encode('utf-8').strip()
+		self.url = ''.join(url).encode('utf-8').strip()
+		
+		yt_id = self.extractYoutubeIdFromUrl()
+
+		if yt_id == "ID_extraction_Failed":
+			self.thumbnail = "ID_extraction_Failed"
+		else:
+			thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
+			self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
+
+
+
+#create Entry object, and add all the objects to array my_objects.
+def createObjects(filename): # create the array Of "json objects"
+	data = soup = BeautifulSoup(open(filename), "html.parser")
+	print("{")
+	for div in soup.findAll('div', attrs={'class':'content-cell'}):#selects the div which is imporant
+			failed = False
+			try:
+				url = div.find('a')['href']
+				title = div.find('a').contents[0]
+				if "https://www.youtube.com" in title: # avoid delete Videos
+					failed = True
+			except Exception as e:
+				failed = True
+
+			if not failed:
+				entry = Entry(title, url)
+				#my_objects.append(entr)
+				print(json.dumps(vars(entry)))
+	print("}") #close the json object
+
+
+#Various methods, not currently in use
 def extract_div(filename):
 	soup = BeautifulSoup(open(filename), "html.parser")
 	for link in soup.find_all('a'):
 		print(link.get('href'))
 
-def getLinks(link_file):
+def getOnlyVideoLinks_notChannel(link_file):
 
 	file1 = open(link_file, 'r')
 	Lines = file1.readlines()
@@ -28,52 +94,10 @@ def getLinks(link_file):
 	for line in Lines:
 		count += 1
 		line = line.strip()
-		if "channel/" not in line:
-			#print("Line{}: {}".format(count, line.strip())) # get only the videos, not the channels
+		if "channel/" not in line: # 
+			#print("Line{}: {}".format(count, line.strip())) # Interesting .format() idea which might be useful later. 
 			print(line.strip())
-
-class Entry:
-	title = ""
-	url = ""
-	thumbnail = ""
-	
-	def __init__(self, title, url):
-		self.title = ''.join(title).encode('utf-8').strip()
-		self.url = ''.join(url).encode('utf-8').strip()
-		# parse url
-		url_data = urlparse.urlparse(url)
-		query = urlparse.parse_qs(url_data.query)
-		yt_id = query["v"][0]
-		thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
-		self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
-	def __str__(self):
-		return "Title: {} Url:  {}".format(self.title, self.url)
-		#return "Title: {} Url:  {} thumbnail: {}".format(self.title, self.url, self.thumbnail)
-
-
-def createObjects(filename):
-	data = soup = BeautifulSoup(open(filename), "html.parser")
-	for div in soup.findAll('div', attrs={'class':'content-cell'}):
-			
-			#create Entry object, and add all the objects to array.
-
-			failed = False
-			try:
-				url = div.find('a')['href']
-				content = div.find('a').contents[0]
-			except Exception as e:
-				failed = True
-
-			if not failed:
-				entr = Entry(content, url)
-				my_objects.append(entr)
-
 
 
 if __name__ == "__main__":
 	createObjects(test_filename_div)
-	for entry in my_objects:
-		attrs = vars(entry)
-		# now dump this in some way or another
-		print(', '.join("%s: %s" % item for item in attrs.items()))
-		print('\n')
