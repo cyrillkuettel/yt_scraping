@@ -1,6 +1,6 @@
 #!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
 
-import urlparse
+import urllib3
 import json
 import re
 
