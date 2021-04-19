@@ -19,9 +19,10 @@ class Entry:  # Stores a single Video. information [title, url thumbnail] is add
     title = ""
     url = ""
     thumbnail = ""
+    channelUrl = ""
 
     def __str__(self):
-        return "Title: {} Url:  {}".format(self.title, self.url)
+        return "Title: {} Url:  {}".format(self.title, self.url, self.channelUrl)
 
     def extractYoutubeIdFromUrl(self):
         failed = False
@@ -44,12 +45,13 @@ class Entry:  # Stores a single Video. information [title, url thumbnail] is add
         else:
             return "ID_extraction_Failed"
 
-    def __init__(self, title, url):
+    def __init__(self, title, url, channelUrl):
 
         title = title.replace('\n', '')
         title = re.sub(' +', ' ', title)  # remove whitespace in the middle
         self.title = ''.join(title).encode('utf-8').strip()
         self.url = ''.join(url).encode('utf-8').strip()
+        self.channelUrl = ''.join(channelUrl).encode('utf-8').strip()
 
         yt_id = self.extractYoutubeIdFromUrl()
 
@@ -64,29 +66,50 @@ class Entry:  # Stores a single Video. information [title, url thumbnail] is add
 def createObjects(filename):  # create the array Of "json objects"
     data = soup = BeautifulSoup(open(filename), "html.parser")
     print("{")
-    for div in soup.findAll('div', attrs={'class': 'content-cell'}):  # selects the div which is imporant
+    for div in soup.findAll('div', attrs={'class': 'content-cell'}):  # selects the div which is important
         failed = False
         try:
             url = div.find('a')['href']
             title = div.find('a').contents[0]
-            if "https://www.youtube.com" in title:  # avoid delete Videos
+            if "https://www.youtube.com" in title:  # avoid deleted Videos
                 failed = True
         except Exception as e:
             failed = True
 
         if not failed:
             entry = Entry(title, url)
-            # my_objects.append(entr)
+            # my_objects.append(entry)
             # print(entry)
             print(vars(entry))  # not working, why
     print("}")  # close the json object
 
 
-# Various methods, not currently in use
-def extract_div(filename):
+def find_channel_and_title_in_div(
+        filename):  # enhanced. this will not only get link and title, but can rewrite it to get the channel aswell
     soup = BeautifulSoup(open(filename), "html.parser")
-    for link in soup.find_all('a'):
-        print(link.get('href'))
+    channel = "https://www.youtube.com/channel/"  # to match the string
+    print("{")
+    for div in soup.findAll('div', attrs={'class': 'content-cell'}):
+        count = 0
+        for element in div.findAll('a',
+                                   href=True):  # there are multiple <a> Elements in Div. Find the one with "channel"
+            channelURL = element['href']  # channel link
+            # print(element['href'])
+            if channel in channelURL:  # truly is a channel Link
+                # print("found channel : {}".format(channelURL))
+                count+=1
+            else:  # in that case, it links to a Video
+                try:
+                    title = element.contents[0]  # test this
+                    if not "https://www.youtube.com" in title:  # avoid deleted Videos
+                        VidUrl = element['href']
+                except Exception as e:
+                    pass
+            entry = Entry(title, VidUrl, channelURL)
+            # my_objects.append(entry)
+            # print(entry)
+            print(vars(entry))  # not working, why
+    print("}")  # close the json object
 
 
 def getOnlyVideoLinks_notChannel(link_file):
@@ -104,4 +127,5 @@ def getOnlyVideoLinks_notChannel(link_file):
 
 
 if __name__ == "__main__":
-    createObjects(test_filename_div)
+    # createObjects(test_filename_div)
+    find_channel_and_title_in_div(test_filename_div)

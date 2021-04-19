@@ -1,8 +1,9 @@
 import json
 import requests
 import pathlib
+import sys
 
-json_file_name = "sample_data.json"  # in the future, this will be a command line argument args[]
+json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
 
@@ -10,7 +11,7 @@ Lines = file1.readlines()
 def loadEachVideoAsJsonIntoArray(Lines):
     jsonList = []
     for line in Lines:
-        print(line)
+        # print(line)
         try:
             data = json.loads(line)  # successfully loaded a json objet. note there is also json.load without an 's'
             jsonList.append(data)
@@ -23,12 +24,12 @@ def downloadThumbnails(jsonList):
     folderName = "thumbnails"
     pathlib.Path(folderName).mkdir(parents=True, exist_ok=True)  # create the folder
     c = 0
-    for dic_t in jsonList:  # each object in array jsonList is basically a python dicitonary
+    for dic_t in jsonList:  # each object in array jsonList is basically a python dictionary
         videoId = getID(dic_t["url"])
-        completePath = folderName + "_" + videoId  # just use os.path for this.
-        url = dic_t["thumbnail"]
+        completePath = folderName + '/' + folderName + "_" + videoId  # just use os.path for this.
+        thumbnailUrl = dic_t["thumbnail"]
         try:
-            r = requests.get(url, allow_redirects=True)  # instead of c, use the id of this particular video
+            r = requests.get(thumbnailUrl, allow_redirects=True)
             open(completePath, 'wb').write(r.content)
         except Exception as e:
             print("{}{}".format("requests failed for thumbail. Iteration =", c))
@@ -42,12 +43,26 @@ def getID(videoUrl):
     return s
 
 
+def searchKeyword(jsonList):
+    searchString = ' '.join(sys.argv[1:])
+    print(searchString)
+    count = 0
+    for dic_t in jsonList:
+        title = getID(dic_t["title"])
+        if searchString in title:
+            count += 1
+            print(dic_t)
+    print("found = {} occurences".format(count))
+
+
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    downloadThumbnails(jsonList)
+    searchKeyword(jsonList)
+# downloadThumbnails(jsonList)
+
 
 # TODO:
-# it does not save thumbnails in the specified folder
+#
 
 # idea. Json is not really necessary , and just use python dict I think.... This would simplify the code tremendously
 # consider: Some objects may have not the expected values.
