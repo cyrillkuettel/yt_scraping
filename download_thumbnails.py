@@ -2,6 +2,7 @@ import json
 import requests
 import pathlib
 import sys
+import ctypes
 
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 file1 = open(json_file_name, 'r')
@@ -52,18 +53,37 @@ def searchKeyword(jsonList):
         if searchString in title:
             count += 1
             print(dic_t)
-    print("found = {} occurences".format(count))
+    print("found = {} occurrences".format(count))
+
+
+def wordCounter(jsonList):
+    searchString = ' '.join(sys.argv[1:])
+    inputArgs = sys.argv
+    results = []
+    for i in inputArgs[1:]:  # Loop Through input args
+        results.append(ForEachTitleDoesContainWord(jsonList, i))
+    print(results)  # Prints how many time each word occurred
+
+
+# @returns prevalence of searchString
+def ForEachTitleDoesContainWord(jsonList, searchString):
+    count = 0
+    for dic_t in jsonList:
+        title = getID(dic_t["title"])
+        if searchString in title:
+            count += 1
+    return count
 
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    searchKeyword(jsonList)
+    wordCounter(jsonList)
 # downloadThumbnails(jsonList)
 
 
-# TODO:
-#
-
 # idea. Json is not really necessary , and just use python dict I think.... This would simplify the code tremendously
-# consider: Some objects may have not the expected values.
-# Test this! If it occurs, this incidence should not confound the correct chronological order. Just jump to the next one.
+# consider: Some objects may have not the expected values. Test this! If it occurs, this incidence should not
+# confound the correct chronological order. Just jump to the next one.
+
+#  TODO: 
+# Make Case-Insensitive

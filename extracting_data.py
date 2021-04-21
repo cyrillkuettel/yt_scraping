@@ -15,7 +15,7 @@ link_file = 'link_file.txt'
 my_objects = []
 
 
-class Entry:  # Stores a single Video. information [title, url thumbnail] is added to attributes.
+class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
     title = ""
     url = ""
     thumbnail = ""
@@ -30,14 +30,13 @@ class Entry:  # Stores a single Video. information [title, url thumbnail] is add
             url_data = urlib3.parse_url.urlib3.parse_url(self.url)
         except Exception as e:
             failed = True
-
         try:
             query = urlib3.parse_url.parse_qs(url_data.query)
         except Exception as e:
             failed = True
 
         try:
-            yt_id = query["v"][0]
+            yt_id = query["v"][0] # ??
         except Exception as e:
             failed = True
         if not failed:
@@ -83,9 +82,9 @@ def createObjects(filename):  # create the array Of "json objects"
             print(vars(entry))  # not working, why
     print("}")  # close the json object
 
-
+# enhanced. Can now extract title, as well as the channel based on the url
 def find_channel_and_title_in_div(
-        filename):  # enhanced. this will not only get link and title, but can rewrite it to get the channel aswell
+        filename):
     soup = BeautifulSoup(open(filename), "html.parser")
     channel = "https://www.youtube.com/channel/"  # to match the string
     print("{")
@@ -111,7 +110,11 @@ def find_channel_and_title_in_div(
             print(vars(entry))  # not working, why
     print("}")  # close the json object
 
-
+def isChannelLink(channel, channelUrl):
+    if channel in channelUrl:
+        return True
+    else:
+        return False
 def getOnlyVideoLinks_notChannel(link_file):
     file1 = open(link_file, 'r')
     Lines = file1.readlines()
