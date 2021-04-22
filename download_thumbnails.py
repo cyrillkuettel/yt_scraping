@@ -55,7 +55,8 @@ def searchKeyword(jsonList):
             print(dic_t)
     print("found = {} occurrences".format(count))
 
-
+#  TODO:
+# Make Case-Insensitive
 def wordCounter(jsonList):
     searchString = ' '.join(sys.argv[1:])
     inputArgs = sys.argv
@@ -77,13 +78,11 @@ def ForEachTitleDoesContainWord(jsonList, searchString):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    wordCounter(jsonList)
-# downloadThumbnails(jsonList)
 
 
 # idea. Json is not really necessary , and just use python dict I think.... This would simplify the code tremendously
 # consider: Some objects may have not the expected values. Test this! If it occurs, this incidence should not
 # confound the correct chronological order. Just jump to the next one.
+#
 
-#  TODO: 
-# Make Case-Insensitive
+# Initially: Load the html raw data. Then feed that into python dict. And maybe, parallel, thumbnails download
