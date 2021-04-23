@@ -10,13 +10,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
+    def test(self):
+        print(dir(self.progressBar))
 
     def incrementProgressBar(self):
-        while self.completed < self.n:
-            self.completed += 1
-            _value = self.completed*100
-            self.progressBar.setValue(_value)
-            self.progressBar.setFormat("%.02f %%" % _value)
+        while self.completed < 100:
+            self.completed += 0.0001
+            self.progressBar.setValue(self.completed)
+
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -27,9 +28,8 @@ class Ui_MainWindow(object):
         self.progressBar.setGeometry(QtCore.QRect(10, 110, 361, 23))
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
-        self.n = 1000  # Decimal
-        self.progressBar.setMaximum(100 * self.n)  # Max progressBar value
-        self.completed = 0  # progressBar progress
+        self.completed = 0
+
         self.lbl1 = QtWidgets.QLabel(self.centralwidget)
         self.lbl1.setGeometry(QtCore.QRect(120, 80, 161, 17))
         self.lbl1.setObjectName("lbl1")
