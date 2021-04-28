@@ -154,27 +154,36 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(400, 60, 89, 31))
+        self.pushButton.setGeometry(QtCore.QRect(700, 90, 101, 31))
         self.pushButton.setObjectName("pushButton")
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(30, 60, 351, 31))
+        self.textEdit.setGeometry(QtCore.QRect(190, 90, 501, 31))
         self.textEdit.setObjectName("textEdit")
         self.listWidget = QtWidgets.QListWidget(self.centralwidget)
-        self.listWidget.setGeometry(QtCore.QRect(10, 110, 771, 461))
+        self.listWidget.setGeometry(QtCore.QRect(190, 130, 621, 461))
         self.listWidget.setObjectName("listWidget")
+        self.listWidget.itemSelectionChanged.connect(self.selectionChanged)  # event for selected Item in Listwidget
+
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(40, 10, 521, 17))
         self.label.setObjectName("label")
+
+        self.thumbnail = QtWidgets.QLabel(self.centralwidget)
+        self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
+        self.thumbnail.setText("")
+        self.thumbnail.setScaledContents(True)
+        self.thumbnail.setObjectName("thumbnail")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 845, 22))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
+
         MainWindow.setStatusBar(self.statusbar)
         self.pushButton.clicked.connect(self.testButtonClicked)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -183,6 +192,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Search"))
         self.label.setText(_translate("MainWindow", "Pleased To meet you, hope you guessed my name."))
+
+    def selectionChanged(self):
+        print("Selected items: ", self.listWidget.selectedItems())  # prints the currently selected item.
 
 
 if __name__ == "__main__":

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>772</height>
+    <width>845</width>
+    <height>644</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>690</x>
-      <y>60</y>
-      <width>89</width>
+      <x>700</x>
+      <y>90</y>
+      <width>101</width>
       <height>31</height>
      </rect>
     </property>
@@ -30,9 +30,9 @@
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>60</y>
-      <width>621</width>
+      <x>190</x>
+      <y>90</y>
+      <width>501</width>
       <height>31</height>
      </rect>
     </property>
@@ -40,10 +40,10 @@
    <widget class="QListWidget" name="listWidget">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>310</y>
-      <width>761</width>
-      <height>101</height>
+      <x>190</x>
+      <y>130</y>
+      <width>621</width>
+      <height>461</height>
      </rect>
     </property>
    </widget>
@@ -60,14 +60,20 @@
      <string>Pleased To meet you, hope you guessed my name.</string>
     </property>
    </widget>
-   <widget class="QListView" name="listView">
+   <widget class="QLabel" name="thumbnail">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>220</y>
-      <width>771</width>
-      <height>291</height>
+      <x>10</x>
+      <y>240</y>
+      <width>170</width>
+      <height>96</height>
      </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>
@@ -76,7 +82,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>845</width>
      <height>22</height>
     </rect>
    </property>
