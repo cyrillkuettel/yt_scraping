@@ -5,8 +5,7 @@ And then filter by category, for example. This is the most basic concept.
 
   ----
  At a deeper lever, we will install _specific_
-search functionality, progressively getting more started on exploring the wastes of the cosmos. In any hindsight however, there
-seems to be more diversity involved in the current stream of history. This phenological explanation does make a lot of sense, if you consider the simply fact, that this talk could progress itselv indefinitely.
+search functionality, progressively getting more started on exploring the wastes of the json.
   ----
 
  Search Ideologies:
