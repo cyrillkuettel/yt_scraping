@@ -53,7 +53,6 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
             return "ID_extraction_Failed"
 
     def __init__(self, title, url, channelUrl):
-
         title = title.replace('\n', '')
         title = re.sub(' +', ' ', title)  # remove whitespace in the middle
         self.title = ''.join(title).encode('utf-8').strip()
@@ -69,8 +68,7 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
             self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
 
 
-def find_channel_and_title_in_div(
-        filename):
+def find_channel_and_title_in_div(filename):
     soup = BeautifulSoup(open(filename), "html.parser")
     channel = "https://www.youtube.com/channel/"  # to match the string
     print("{")
@@ -200,6 +198,7 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
     import sys
+    # what we need: List or Array of Entry Objects. So that when I select a Entry, there should be a label for starters which displays this information.
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

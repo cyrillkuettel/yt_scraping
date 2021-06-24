@@ -2,9 +2,9 @@ import json
 import requests
 import pathlib
 import sys
-import ctypes
 
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
+# I think his class is essentially only used in the initial phase, when the history file is first opened.
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
 
@@ -44,6 +44,8 @@ def getID(videoUrl):
     return s
 
 
+# TODO:
+#  Make Case-Insensitive
 def searchKeyword(jsonList):
     searchString = ' '.join(sys.argv[1:])
     print(searchString)
@@ -55,22 +57,20 @@ def searchKeyword(jsonList):
             print(dic_t)
     print("found = {} occurrences".format(count))
 
-#  TODO:
-# Make Case-Insensitive
+
+# Prints how many time each word occurred
 def wordCounter(jsonList):
-    searchString = ' '.join(sys.argv[1:])
-    inputArgs = sys.argv
     results = []
-    for i in inputArgs[1:]:  # Loop Through input args
+    for i in sys.argv[1:]:  # Loop Through input args
         results.append(ForEachTitleDoesContainWord(jsonList, i))
-    print(results)  # Prints how many time each word occurred
+    print(results)
 
 
 # @returns prevalence of searchString
 def ForEachTitleDoesContainWord(jsonList, searchString):
     count = 0
     for dic_t in jsonList:
-        title = getID(dic_t["title"])
+        title = getID(dic_t["title"]) # ???? why did I write getID here. This returns the ID of the title??? I have to check that.
         if searchString in title:
             count += 1
     return count
@@ -78,7 +78,6 @@ def ForEachTitleDoesContainWord(jsonList, searchString):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-
 
 # idea. Json is not really necessary , and just use python dict I think.... This would simplify the code tremendously
 # consider: Some objects may have not the expected values. Test this! If it occurs, this incidence should not
