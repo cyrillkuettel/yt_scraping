@@ -158,7 +158,6 @@ class UiMainWindow(object):
         for item in results:
             title = item['title']
             titlesOfResults.append(title)
-
             self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
             # class to be independent.
 
@@ -179,17 +178,14 @@ class UiMainWindow(object):
         self.listWidget.setGeometry(QtCore.QRect(190, 130, 621, 461))
         self.listWidget.setObjectName("listWidget")
         self.listWidget.itemSelectionChanged.connect(self.selectionChanged)  # event for selected Item in Listwidget
-
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(40, 10, 521, 17))
         self.label.setObjectName("label")
-
         self.thumbnail = QtWidgets.QLabel(self.centralwidget)
         self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
         self.thumbnail.setText("")
         self.thumbnail.setScaledContents(True)
         self.thumbnail.setObjectName("thumbnail")
-
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 845, 22))
@@ -218,7 +214,11 @@ if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
 
     # what we need:
-    # I can access the Entry Object now. But why is the thumbnail not included?
+    # I can access the Entry Object now. But why is the thumbnail not included? OK Works now
+
+    # TODO:
+    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )
+
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

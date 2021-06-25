@@ -9,14 +9,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
-    def testButtonClicked(self):
-        self.tbl.clear()
-        titlesOfResults = []
-        searchWord = self.textEdit.toPlainText()
-        #results = getSearchResults(jsonList, searchWord)
-        for item in results:
-            titlesOfResults.append(item['title'])
-        self.tbl.
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
