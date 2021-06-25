@@ -109,26 +109,10 @@ def find_channel_and_title_in_div(filename):
     print("}")  # close the json object
 
 
-# TODO:
-#  join words together, so it is possible to search multiple
-def getSearchResults(currentjsonList, s):
-    searchString = ''.join(s)
-    count = 0
-    resultList = []
-    for dic_t in currentjsonList:
-        title = getID(dic_t["title"])  # strip the title
-        if searchString in title:
-            count += 1
-            resultList.append(dic_t)
-    print("found = {} occurrences".format(count))
-    return resultList
 
 
-# returns the ID from a given Youtube url
-def getID(videoUrl):
-    trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
-    s = videoUrl.replace(trimBefore, "")
-    return s
+
+
 
 
 def loadEachVideoAsJsonIntoArray(Lines):
@@ -149,12 +133,38 @@ def loadEachVideoAsJsonIntoArray(Lines):
 
 class UiMainWindow(object):
     currentSearchResult = {}  # Dictionary of current Search results. Maps {title -> EntryObject }
+    currentNumberOfSearchResults = 0
+
+    # TODO:
+    #  -join words together, so it is possible to search multiple
+    #  -is quicksort a idea, an improvment?
+    #  -make case Insensitive
+    #   -trigger Enter event
+    #  -also full text search, and "nearness" of words in terms of space
+    def getSearchResults(self, currentjsonList, s):
+        searchString = ''.join(s)
+        count = 0
+        resultList = []
+        for dic_t in currentjsonList:
+            title = self.getID(dic_t["title"])  # strip the title
+            if searchString in title:
+                count += 1
+                resultList.append(dic_t)
+        print("found = {} occurrences".format(count))
+        self.currentNumberOfSearchResults = count
+        return resultList
+
+    # returns the ID from a given Youtube url
+    def getID(self, videoUrl):
+        trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
+        s = videoUrl.replace(trimBefore, "")
+        return s
 
     def testButtonClicked(self):
         self.listWidget.clear()
         titlesOfResults = []
         searchWord = self.textEdit.toPlainText()
-        results = getSearchResults(jsonList, searchWord)
+        results = self.getSearchResults(jsonList, searchWord)
         for item in results:
             title = item['title']
             titlesOfResults.append(title)
@@ -162,6 +172,7 @@ class UiMainWindow(object):
             # class to be independent.
 
         self.listWidget.addItems(titlesOfResults)  # I have to change this soon anyway for a table structure.
+        self.label.setText(str(self.currentNumberOfSearchResults))
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")

@@ -12,4 +12,6 @@ search functionality, progressively getting more started on exploring the wastne
                         -  Subtitles
                         - as well as the videos metadata very precisely. In a elegantt way, we will provide software, as well as the geographical landscape
                         of this particular software.
+			# Ideas
+				-ContextMenu when a item is selected
 
