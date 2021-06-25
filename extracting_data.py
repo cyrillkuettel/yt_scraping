@@ -1,7 +1,7 @@
 #!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
 
 # run this before running download_thumbnails
-# On Laptop I have to run python3.5 extracting_data.py
+# Very Important: On Laptop I have to run "python3.5 extracting_data.py"
 
 import urllib3
 import sys
@@ -13,6 +13,7 @@ import requests
 import pathlib
 import ctypes
 
+EntryObjects = {}  # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
@@ -20,7 +21,6 @@ Lines = file1.readlines()
 verlauf_trimmed = '../verlauf/verlauf_trimmed.html'
 test_filename_div = '../verlauf/test_filename_div.html'
 link_file = 'link_file.txt'
-EntryObjects = []  # deprecated. Write to file for permanent storage
 
 
 class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
@@ -101,12 +101,11 @@ def loadEachVideoAsJsonIntoArray(Lines):
     for line in Lines:
         try:
             data = json.loads(line)  # successfully loaded a json objet.
-            print(data)
             title = data['title']
             videoUrl = data['url']
             channelUrl = data['thumbnail']
             entry = Entry(title, videoUrl, channelUrl)
-            EntryObjects.append(entry)
+            EntryObjects[title] = entry
             jsonList.append(data)
         except Exception as e:
             print("{} {}".format("could not load json for this video. Probably url not valid. ", e))
@@ -115,12 +114,11 @@ def loadEachVideoAsJsonIntoArray(Lines):
 
 # TODO:
 #  join words together, so it is possible to search multiple
-def getSearchResults(jsonList, s):
+def getSearchResults(currentjsonList, s):
     searchString = ''.join(s)
-    print(searchString)
     count = 0
     resultList = []
-    for dic_t in jsonList:
+    for dic_t in currentjsonList:
         title = getID(dic_t["title"])  # strip the title
         if searchString in title:
             count += 1
@@ -137,15 +135,20 @@ def getID(videoUrl):
 
 
 class UiMainWindow(object):
+    currentSearchResult = {}  # Dictionary of current Search results. Maps {title -> EntryObject }
+
     def testButtonClicked(self):
         self.listWidget.clear()
         titlesOfResults = []
         searchWord = self.textEdit.toPlainText()
         results = getSearchResults(jsonList, searchWord)
         for item in results:
+            title = item['title']
             titlesOfResults.append(item['title'])
+            self.currentSearchResult[title] = EntryObjects[title]  # this might seem unnecessary, but I want the class
+            # to be independent.
 
-        self.listWidget.addItems(titlesOfResults)
+        self.listWidget.addItems(titlesOfResults)  # I have to change this soon anyway for a table structure.
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -193,7 +196,9 @@ class UiMainWindow(object):
         self.label.setText(_translate("MainWindow", "Pleased To meet you, hope you guessed my name."))
 
     def selectionChanged(self):
-        print("Selected items: ", self.listWidget.selectedItems())  # prints the currently selected item.
+        title = self.listWidget.currentItem().text()
+        print(self.listWidget.currentItem().text())
+        print(self.currentSearchResult.get(title))
 
 
 if __name__ == "__main__":
@@ -201,7 +206,8 @@ if __name__ == "__main__":
 
     # what we need:
     # List or Array of Entry Objects. So that when I select a Entry,
-    # there should be a label for starters which displays this information.
+    # I need to find out, of to link the GUI Widget with the Entry Object.
+    # I think it's not that bad after all. Lookup for dicts is O(1)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
