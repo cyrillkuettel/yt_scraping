@@ -1,16 +1,16 @@
 #!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
 
 # run this before running download_thumbnails
+# On Laptop I have to run python3.5 extracting_data.py
 
 import urllib3
-import json
+import sys
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import json
 import requests
 import pathlib
-import sys
 import ctypes
 
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
@@ -20,7 +20,7 @@ Lines = file1.readlines()
 verlauf_trimmed = '../verlauf/verlauf_trimmed.html'
 test_filename_div = '../verlauf/test_filename_div.html'
 link_file = 'link_file.txt'
-my_objects = []  # deprecated. Write to file for permanent storage
+EntryObjects = []  # deprecated. Write to file for permanent storage
 
 
 class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
@@ -35,11 +35,11 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
     def extractYoutubeIdFromUrl(self):
         failed = False
         try:
-            url_data = urlib3.parse_url.urlib3.parse_url(self.url)
+            url_data = urllib3.parse_url(self.url)
         except Exception as e:
             failed = True
         try:
-            query = urlib3.parse_url.parse_qs(url_data.query)
+            query = urllib3.parse_url.parse_qs(url_data.query)
         except Exception as e:
             failed = True
 
@@ -63,12 +63,14 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
 
         if yt_id == "ID_extraction_Failed":
             self.thumbnail = "ID_extraction_Failed"
-        else:
+        else:  # it's possible to craft the link for thumbnail.
             thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
             self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
 
 
 def find_channel_and_title_in_div(filename):
+    # TODO:
+    #   instead of printing, write the output to file.
     soup = BeautifulSoup(open(filename), "html.parser")
     channel = "https://www.youtube.com/channel/"  # to match the string
     print("{")
@@ -78,18 +80,18 @@ def find_channel_and_title_in_div(filename):
                                    href=True):  # there are multiple <a> Elements in Div. Find the one with "channel"
             channelURL = element['href']  # channel link
             # print(element['href'])
-            if isChannelLink(channel, channelURL):
+            if channel in channelURL:
                 # print("found channel : {}".format(channelURL))
                 count += 1
             else:  # in that case, it links to a Video
                 try:
-                    title = element.contents[0]  # test this
+                    title = element.contents[0]
                     if not "https://www.youtube.com" in title:  # avoid deleted Videos
                         VidUrl = element['href']
                 except Exception as e:
                     pass
             entry = Entry(title, VidUrl, channelURL)
-            # my_objects.append(entry)  # this might not be necessary. In fact, you could just write the output to file.
+            # EntryObjects.append(entry)  # this might not be necessary. In fact, you could just write the output to file.
             print(vars(entry))
     print("}")  # close the json object
 
@@ -97,9 +99,14 @@ def find_channel_and_title_in_div(filename):
 def loadEachVideoAsJsonIntoArray(Lines):
     jsonList = []
     for line in Lines:
-        # print(line)
         try:
-            data = json.loads(line)  # successfully loaded a json objet. note there is also json.load without an 's'
+            data = json.loads(line)  # successfully loaded a json objet.
+            print(data)
+            title = data['title']
+            videoUrl = data['url']
+            channelUrl = data['thumbnail']
+            entry = Entry(title, videoUrl, channelUrl)
+            EntryObjects.append(entry)
             jsonList.append(data)
         except Exception as e:
             print("{} {}".format("could not load json for this video. Probably url not valid. ", e))
@@ -122,20 +129,14 @@ def getSearchResults(jsonList, s):
     return resultList
 
 
+# returns the ID from a given Youtube url
 def getID(videoUrl):
     trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
     s = videoUrl.replace(trimBefore, "")
     return s
 
 
-def isChannelLink(channel, channelUrl):
-    if channel in channelUrl:
-        return True
-    else:
-        return False
-
-
-class Ui_MainWindow(object):
+class UiMainWindow(object):
     def testButtonClicked(self):
         self.listWidget.clear()
         titlesOfResults = []
@@ -197,12 +198,14 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    import sys
-    # what we need: List or Array of Entry Objects. So that when I select a Entry, there should be a label for starters which displays this information.
+
+    # what we need:
+    # List or Array of Entry Objects. So that when I select a Entry,
+    # there should be a label for starters which displays this information.
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
+    ui = UiMainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
