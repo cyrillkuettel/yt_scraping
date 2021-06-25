@@ -30,7 +30,7 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
     channelUrl = ""
 
     def __str__(self):
-        return "Title: {} Url:  {}".format(self.title, self.url, self.channelUrl)
+        return "Entry Object: Title: {} Url:  {}, channelUrl : {}".format(self.title, self.url, self.channelUrl)
 
     def extractYoutubeIdFromUrl(self):
         failed = False
@@ -44,7 +44,7 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
             failed = True
 
         try:
-            yt_id = query["v"][0]  # ??
+            yt_id = query["v"][0]  # ?? who knows what this does, one can only guess
         except Exception as e:
             failed = True
         if not failed:
@@ -61,11 +61,11 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
 
         yt_id = self.extractYoutubeIdFromUrl()
 
-        if yt_id == "ID_extraction_Failed":
-            self.thumbnail = "ID_extraction_Failed"
-        else:  # it's possible to craft the link for thumbnail.
+        if not yt_id == "ID_extraction_Failed": # 99% of the time it's possible to craft the link for thumbnail.
             thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
             self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
+        else:
+            self.thumbnail = yt_id
 
 
 def find_channel_and_title_in_div(filename):
@@ -96,22 +96,6 @@ def find_channel_and_title_in_div(filename):
     print("}")  # close the json object
 
 
-def loadEachVideoAsJsonIntoArray(Lines):
-    jsonList = []
-    for line in Lines:
-        try:
-            data = json.loads(line)  # successfully loaded a json objet.
-            title = data['title']
-            videoUrl = data['url']
-            channelUrl = data['thumbnail']
-            entry = Entry(title, videoUrl, channelUrl)
-            EntryObjects[title] = entry
-            jsonList.append(data)
-        except Exception as e:
-            print("{} {}".format("could not load json for this video. Probably url not valid. ", e))
-    return jsonList
-
-
 # TODO:
 #  join words together, so it is possible to search multiple
 def getSearchResults(currentjsonList, s):
@@ -133,6 +117,21 @@ def getID(videoUrl):
     s = videoUrl.replace(trimBefore, "")
     return s
 
+def loadEachVideoAsJsonIntoArray(Lines):
+    jsonList = []
+    for line in Lines:
+        try:
+            data = json.loads(line)  # successfully loaded a json objet.
+            title = data['title']
+            videoUrl = data['url']
+            channelUrl = data['thumbnail']
+            entry = Entry(title, videoUrl, channelUrl)
+            EntryObjects[title] = entry
+            jsonList.append(data)
+        except Exception as e:
+            print("{} {}".format("Error in loadEachVideoAsJsonIntoArray. ", e))
+    return jsonList
+
 
 class UiMainWindow(object):
     currentSearchResult = {}  # Dictionary of current Search results. Maps {title -> EntryObject }
@@ -144,8 +143,9 @@ class UiMainWindow(object):
         results = getSearchResults(jsonList, searchWord)
         for item in results:
             title = item['title']
-            titlesOfResults.append(item['title'])
-            self.currentSearchResult[title] = EntryObjects[title]  # this might seem unnecessary, but I want the class
+            titlesOfResults.append(title)
+
+            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the class
             # to be independent.
 
         self.listWidget.addItems(titlesOfResults)  # I have to change this soon anyway for a table structure.
@@ -197,17 +197,15 @@ class UiMainWindow(object):
 
     def selectionChanged(self):
         title = self.listWidget.currentItem().text()
-        print(self.listWidget.currentItem().text())
-        print(self.currentSearchResult.get(title))
+        print(self.currentSearchResult.get(title).channelUrl.decode('utf-8'))
+
 
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
 
     # what we need:
-    # List or Array of Entry Objects. So that when I select a Entry,
-    # I need to find out, of to link the GUI Widget with the Entry Object.
-    # I think it's not that bad after all. Lookup for dicts is O(1)
+    # I can access the Entry Object now. But why is the thumbnail not included?
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

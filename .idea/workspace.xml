@@ -2,21 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112291cd-081b-41cb-9445-87e9c67566af" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/yt_scraping.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/full_text_search/youtube-api-ausprobieren.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/installation/pyqt_installation.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyQt/command.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyQt/prototype1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyQt/prototype1.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/python.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/full_text_search/searchGo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyQt/Search_listview.ui" beforeDir="false" afterPath="$PROJECT_DIR$/pyQt/Search_listview.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/txt/command.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +93,7 @@
       <option name="presentableId" value="Default" />
       <updated>1624603720558</updated>
       <workItem from="1624603750454" duration="1734000" />
-      <workItem from="1624605944483" duration="5091000" />
+      <workItem from="1624605944483" duration="11639000" />
     </task>
     <servers />
   </component>
