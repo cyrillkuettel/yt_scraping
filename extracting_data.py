@@ -24,13 +24,15 @@ link_file = 'link_file.txt'
 
 
 class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
+    # What I don't like is that we are using the Entry class for two use cases right now.
+    # In the process we are creating a lot of redundancy
     title = ""
     url = ""
     thumbnail = ""
     channelUrl = ""
 
     def __str__(self):
-        return "Entry Object: Title: {} Url:  {}, channelUrl : {}".format(self.title, self.url, self.channelUrl)
+        return "Entry Object: Title: {} Url:  {}, thumbnailUrl : {}".format(self.title, self.url, self.thumbnail)
 
     def extractYoutubeIdFromUrl(self):
         failed = False
@@ -52,7 +54,14 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
         else:
             return "ID_extraction_Failed"
 
-    def __init__(self, title, url, channelUrl):
+    def __init__(self, title, url, thumbnail):
+        self.title = title
+        self.url = url
+        self.thumbnail = thumbnail
+
+    # similar to Overloading a constructor, the pythonic way. this one we will use When inputting from raw html
+    @classmethod
+    def withChannelUrl(self, title, url, channelUrl):
         title = title.replace('\n', '')
         title = re.sub(' +', ' ', title)  # remove whitespace in the middle
         self.title = ''.join(title).encode('utf-8').strip()
@@ -61,15 +70,19 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
 
         yt_id = self.extractYoutubeIdFromUrl()
 
-        if not yt_id == "ID_extraction_Failed": # 99% of the time it's possible to craft the link for thumbnail.
+        if not yt_id == "ID_extraction_Failed":  # 99% of the time it's possible to craft the link for thumbnail.
             thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
             self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
         else:
             self.thumbnail = yt_id
 
 
+
+
 def find_channel_and_title_in_div(filename):
     # TODO:
+    #   This function wants as an input the raw html data.
+    #   this is quite buggy and does nothing. Getting the channel has not been accomplished so far.
     #   instead of printing, write the output to file.
     soup = BeautifulSoup(open(filename), "html.parser")
     channel = "https://www.youtube.com/channel/"  # to match the string
@@ -86,7 +99,7 @@ def find_channel_and_title_in_div(filename):
             else:  # in that case, it links to a Video
                 try:
                     title = element.contents[0]
-                    if not "https://www.youtube.com" in title:  # avoid deleted Videos
+                    if "https://www.youtube.com" not in title:  # avoid deleted Videos
                         VidUrl = element['href']
                 except Exception as e:
                     pass
@@ -117,19 +130,20 @@ def getID(videoUrl):
     s = videoUrl.replace(trimBefore, "")
     return s
 
+
 def loadEachVideoAsJsonIntoArray(Lines):
     jsonList = []
     for line in Lines:
+        data = json.loads(line)  # successfully loaded a json objet.
+        title = data['title']
+        videoUrl = data['url']
+        thumbnail = data['thumbnail']
         try:
-            data = json.loads(line)  # successfully loaded a json objet.
-            title = data['title']
-            videoUrl = data['url']
-            channelUrl = data['thumbnail']
-            entry = Entry(title, videoUrl, channelUrl)
+            entry = Entry(title, videoUrl, thumbnail)
             EntryObjects[title] = entry
             jsonList.append(data)
         except Exception as e:
-            print("{} {}".format("Error in loadEachVideoAsJsonIntoArray. ", e))
+            print("{} {}".format("Error in loadEachVideoAsJsonIntoArray while creating Entry Object. ", e))
     return jsonList
 
 
@@ -145,8 +159,8 @@ class UiMainWindow(object):
             title = item['title']
             titlesOfResults.append(title)
 
-            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the class
-            # to be independent.
+            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
+            # class to be independent.
 
         self.listWidget.addItems(titlesOfResults)  # I have to change this soon anyway for a table structure.
 
@@ -197,8 +211,7 @@ class UiMainWindow(object):
 
     def selectionChanged(self):
         title = self.listWidget.currentItem().text()
-        print(self.currentSearchResult.get(title).channelUrl.decode('utf-8'))
-
+        print(self.currentSearchResult.get(title).thumbnail)
 
 
 if __name__ == "__main__":

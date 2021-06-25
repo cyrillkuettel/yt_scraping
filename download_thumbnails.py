@@ -33,7 +33,7 @@ def downloadThumbnails(jsonList):
             r = requests.get(thumbnailUrl, allow_redirects=True)
             open(completePath, 'wb').write(r.content)
         except Exception as e:
-            print("{}{}".format("requests failed for thumbail. Iteration =", c))
+            print("{}{}".format("requests failed for thumbnail. Iteration =", c))
             raise e
         c = c + 1
 
@@ -70,7 +70,7 @@ def wordCounter(jsonList):
 def ForEachTitleDoesContainWord(jsonList, searchString):
     count = 0
     for dic_t in jsonList:
-        title = getID(dic_t["title"]) # ???? why did I write getID here. This returns the ID of the title??? I have to check that.
+        title = getID(dic_t["title"]) # ???? why did I write getID here. This returns the ID of the title?
         if searchString in title:
             count += 1
     return count

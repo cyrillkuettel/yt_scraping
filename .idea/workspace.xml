@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="112291cd-081b-41cb-9445-87e9c67566af" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/download_thumbnails.py" beforeDir="false" afterPath="$PROJECT_DIR$/download_thumbnails.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -93,7 +94,7 @@
       <option name="presentableId" value="Default" />
       <updated>1624603720558</updated>
       <workItem from="1624603750454" duration="1734000" />
-      <workItem from="1624605944483" duration="11639000" />
+      <workItem from="1624605944483" duration="14288000" />
     </task>
     <servers />
   </component>
@@ -117,6 +118,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/yt_scraping$prototype1.coverage" NAME="prototype1 Coverage Results" MODIFIED="1624610328732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyQt" />
-    <SUITE FILE_PATH="coverage/yt_scraping$extracting_data.coverage" NAME="extracting_data Coverage Results" MODIFIED="1624611492195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/yt_scraping$extracting_data.coverage" NAME="extracting_data Coverage Results" MODIFIED="1624623542455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
