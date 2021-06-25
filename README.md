@@ -5,7 +5,7 @@ And then filter by category, for example. This is the most basic concept.
 
   ----
  At a deeper lever, we will install _specific_
-search functionality, progressively getting more started on exploring the wastes of the json.
+search functionality, progressively getting more started on exploring the wastness of the json.
   ----
 
  Search Ideologies:
