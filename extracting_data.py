@@ -25,6 +25,7 @@ test_filename_div = '../verlauf/test_filename_div.html'
 link_file = 'link_file.txt'
 
 
+# noinspection PyInterpreter
 class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
     # What I don't like is that we are using the Entry class for two use cases right now.
     # In the process we are creating a lot of redundancy
@@ -136,12 +137,12 @@ class UiMainWindow(object):
     #   -trigger Enter event
     #  -also full text search, and "nearness" of words in terms of space
     def getSearchResults(self, currentjsonList, s):
-        searchString = ''.join(s)
+        searchString = ''.join(s).lower()
         count = 0
         resultList = []
         for dic_t in currentjsonList:
             title = self.getID(dic_t["title"])
-            if searchString in title:
+            if searchString in title.lower():
                 count += 1
                 resultList.append(dic_t)
         return resultList
@@ -155,22 +156,25 @@ class UiMainWindow(object):
     def searchButtonClicked(self):
         titlesOfResults = []
         query = self.lineEdit.text()
-        if query == "" or query == " ":
-            self.prepareToShowAll()
-        else:
-            results = self.getSearchResults(jsonList, query)
-            self.currentSearchResult = {}  # new Search, clear contents.
-            for item in results:
-                title = item['title']
-                titlesOfResults.append(title)
-                self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
-                # class to be independent.
-            # print('\n'.join('{}'.format(item) for item in titlesOfResults))
-
+        if query == "":
+            self.updateResultsIntoTable(True)
+            return
+        results = self.getSearchResults(jsonList, query)
+        self.currentSearchResult = {}  # new Search, clear contents.
+        for item in results:
+            title = item['title']
+            titlesOfResults.append(title)
+            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
+            # class to be independent.
+        # print('\n'.join('{}'.format(item) for item in titlesOfResults))
         self.updateResultsIntoTable()
 
-    def updateResultsIntoTable(self):
-        # Write text to Labels
+    def updateResultsIntoTable(self, everything=False):
+        self.tbl.clear()
+
+        if everything:  # show everything, no filter
+            self.prepareToShowAll() # Here's how it works: prepareToShowAll() fills the local variable
+            # currentSearchResult with all 12k Lines
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
@@ -183,9 +187,16 @@ class UiMainWindow(object):
             self.tbl.setItem(count, 2, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
             self.tbl.setItem(count, 3, QtWidgets.QTableWidgetItem("channel"))
             count += 1
+        # delete possibly present blank Lines:
+        self.tbl.setRowCount(len(self.currentSearchResult))
+        # determine gap between columns
         self.tbl.resizeColumnsToContents()
+        header = self.tbl.horizontalHeader()
+        header.setSectionResizeMode(0, QtWidgets.QHeaderView.Interactive)
+        header.resizeSection(0, 250)  # the title Column should not be too wide
+        header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
+        header.resizeSection(1, 370)
 
-    # if the user searches for empty String, show all Content.
     def prepareToShowAll(self):
         for key, value in EntryObjects.items():
             self.currentSearchResult[key] = EntryObjects.get(key)  # Copy all. This creates redundancy, but simplifies
@@ -200,12 +211,12 @@ class UiMainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(800, 90, 201, 31))
+        self.pushButton.setGeometry(QtCore.QRect(1100, 90, 201, 31))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.searchButtonClicked)
 
         self.wordCloudButton = QtWidgets.QPushButton(self.centralwidget)
-        self.wordCloudButton.setGeometry(QtCore.QRect(800, 40, 201, 31))
+        self.wordCloudButton.setGeometry(QtCore.QRect(1100, 40, 201, 31))
         self.wordCloudButton.setObjectName("wordCloudButton")
         self.wordCloudButton.clicked.connect(self.generateWordCloud)
 
@@ -215,26 +226,26 @@ class UiMainWindow(object):
         self.imgLabel.setObjectName("thumbnailPreview")
 
         self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
-        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 250, 20))
+        self.lblOccurrences.setGeometry(QtCore.QRect(490, 47, 250, 20))
         self.lblOccurrences.setObjectName("lblOccurrences")
 
-        self.lbldebug = QtWidgets.QLabel(self.centralwidget)
-        self.lbldebug.setGeometry(QtCore.QRect(400, 47, 500, 20))
-        self.lbldebug.setObjectName("lblOccurrences")
-
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(190, 90, 591, 31))
+        self.lineEdit.setGeometry(QtCore.QRect(490, 90, 591, 31))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setText("Terence")  # convenience
         self.lineEdit.returnPressed.connect(self.pushButton.click)
 
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
-        self.tbl.setGeometry(QtCore.QRect(190, 130, 1500, 850))
+        self.tbl.setGeometry(QtCore.QRect(490, 130, 1000, 850))
         self.tbl.setObjectName("resultTable")
         self.tbl.setColumnCount(4)  # Very important, else it's crashing
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.tbl.itemSelectionChanged.connect(self.selectionChanged)
+        # Allow Context menu
+        self.tbl.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        # Connect the signal request to the slot (click the right mouse button to call the method)
+        self.tbl.customContextMenuRequested.connect(self.generateContextMenu)
 
         self.thumbnail = QtWidgets.QLabel(self.centralwidget)
         self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
@@ -259,6 +270,37 @@ class UiMainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        #  In the beginning, show all items of course
+        self.updateResultsIntoTable(everything=True)
+        # pos is the clicked position
+
+    def generateContextMenu(self, pos):
+        print(pos)
+        # Get index
+        for i in self.tbl.selectionModel().selection().indexes():
+            strSElectiontest = str(self.tbl.selectionModel().selection().first())
+            print("the Selection is " + strSElectiontest)
+            rowNum = i.row()
+
+        # If the selected row index is less than 1, the context menu will pop up
+        if rowNum < 3:
+            menu = QtWidgets.QMenu()
+            item1 = menu.addAction("Menu 1")
+            item2 = menu.addAction("Menu 2")
+            item3 = menu.addAction("Menu 3")
+            # Make the menu display in the normal position
+            screenPos = self.tbl.mapToGlobal(pos)
+
+            # Click on a menu item to return, making it blocked
+            action = menu.exec(screenPos)
+            if action == item1:
+                print('Select Menu 1', self.tbl.item(rowNum, 0).text())
+            if action == item2:
+                print('Select menu 2', self.tbl.item(rowNum, 0).text())
+            if action == item3:
+                print('Select menu 3', self.tbl.item(rowNum, 0).text())
+            else:
+                return
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -284,7 +326,6 @@ class UiMainWindow(object):
                 file_name = "0" + file_extension
                 print(file_name)
                 completeName = os.path.join(thumbnailDirectory, file_name)
-                self.lbldebug.setText(completeName)
                 r = requests.get(thumbnailURL)
 
                 try:
@@ -292,13 +333,14 @@ class UiMainWindow(object):
                         f.write(r.content)
                     im = Image.open(completeName)
                     width, height = im.size
-                    image = QtGui.QPixmap(completeName).scaled(width, height,
+                    image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
                                                                aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
                                                                transformMode=QtCore.Qt.FastTransformation)
                     self.imgLabel.setMinimumSize(width, height)
                     self.imgLabel.setPixmap(image)
                 except:
-                    pass
+                    pass # I don't give a fuck
+
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
         wordCloud.show()
@@ -306,10 +348,6 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-
-    # TODO:
-    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )                 [X]
-    #       - Thumbnail                                                                         [X]
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
