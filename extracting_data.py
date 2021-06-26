@@ -142,7 +142,6 @@ class UiMainWindow(object):
             if searchString in title:
                 count += 1
                 resultList.append(dic_t)
-        self.currentNumberOfSearchResults = count
         return resultList
 
     # returns the ID from a given Youtube url
@@ -152,9 +151,7 @@ class UiMainWindow(object):
         return s
 
     def testButtonClicked(self):
-
         titlesOfResults = []
-
         query = self.lineEdit.text()
         results = self.getSearchResults(jsonList, query)
         for item in results:
@@ -162,31 +159,26 @@ class UiMainWindow(object):
             titlesOfResults.append(title)
             self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
             # class to be independent.
+        # print('\n'.join('{}'.format(item) for item in titlesOfResults))
+        self.updateResultsIntoTable()
+
+    def updateResultsIntoTable(self):  # Results holds all the titles
+        # Write text to Lables
+        self.tbl.clear()
+        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
+        self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
 
-        # If there is a search result, put the items into Table Widget
-        # Logic is not yet written
-        # I will write the logic now.
-        self.updateResultsIntoTable(results)
-
-    def updateResultsIntoTable(self, results):  # Results holds all the titles
-        # Some design stuff
-        self.tbl.clear()
-        # self.tbl.setRowCount(len(results))
-        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
+        # Here I want to make it pretty
         # Expected type 'Union[QBrush, QColor, GlobalColor, QGradient]', got 'int' instead
         # brush = QtGui.QBrush()
         # pen = QtGui.QPen(brush, QtGui.QColor(0, 0, 255, 127))
         # self.tbl.setGridStyle(pen)
         count = 0
-        # self.tableWidget.setItem(
-        #                 row_number, column_number, QTableWidgetItem(str(data)))
         for key, value in self.currentSearchResult.items():
             rowPosition = self.tbl.rowCount()
             self.tbl.insertRow(rowPosition)  # Insert empty row
-            print(value.url)
-            print(value.thumbnail)
-
+            print(value)
             self.tbl.setItem(count, 0, QtWidgets.QTableWidgetItem(str(value.title)))
             self.tbl.setItem(count, 1, QtWidgets.QTableWidgetItem(str(value.url)))
             self.tbl.setItem(count, 2, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
@@ -196,7 +188,8 @@ class UiMainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1031, 782)
+        MainWindow.showMaximized()
+        MainWindow.setMinimumSize(1300, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -210,20 +203,21 @@ class UiMainWindow(object):
         self.lblthumbnail.setScaledContents(True)
         self.lblthumbnail.setObjectName("lblthumbnail")
         self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
-        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 101, 20))
+        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 150, 20))
         self.lblOccurrences.setObjectName("lblOccurrences")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(190, 90, 591, 31))
         self.lineEdit.setObjectName("lineEdit")
+        self.lineEdit.setText("Terence")  # convenience
 
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
-        self.tbl.setGeometry(QtCore.QRect(190, 130, 811, 541))
+        self.tbl.setGeometry(QtCore.QRect(190, 130, 1500, 850))
         self.tbl.setObjectName("resultTable")
-        self.tbl.setColumnCount(4)
-        #self.tbl.setRowCount(0)
-        # self.tbl.itemSelectionChanged(self.selectionChanged)
+        self.tbl.setColumnCount(4) # Very important, else it's crashing
+        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
+        self.tbl.itemSelectionChanged.connect(self.selectionChanged)
 
         self.thumbnail = QtWidgets.QLabel(self.centralwidget)
         self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
@@ -259,15 +253,18 @@ class UiMainWindow(object):
         self.actionImport.setText(_translate("MainWindow", "Import"))
 
     def selectionChanged(self):
-        title = self.tbl.currentItem().text()
-        print(self.currentSearchResult.get(title).thumbnail)
+        row = self.tbl.selectedItems()
+        if len(row) <= 4:  # only trigger when 1 Row is selected (or a part thereof)
+            if len(row) == 4:
+                print(self.currentSearchResult.get(row[0].text()).thumbnail)
+        #
 
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
 
     # TODO:
-    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )                 [ ]
+    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )                 [X]
     #       - Thumbnail                                                                         [ ]
 
     app = QtWidgets.QApplication(sys.argv)
