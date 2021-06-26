@@ -77,8 +77,6 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
             self.thumbnail = yt_id
 
 
-
-
 def find_channel_and_title_in_div(filename):
     # TODO:
     #   This function wants as an input the raw html data.
@@ -107,12 +105,6 @@ def find_channel_and_title_in_div(filename):
             # EntryObjects.append(entry)  # this might not be necessary. In fact, you could just write the output to file.
             print(vars(entry))
     print("}")  # close the json object
-
-
-
-
-
-
 
 
 def loadEachVideoAsJsonIntoArray(Lines):
@@ -146,11 +138,10 @@ class UiMainWindow(object):
         count = 0
         resultList = []
         for dic_t in currentjsonList:
-            title = self.getID(dic_t["title"])  # strip the title
+            title = self.getID(dic_t["title"])
             if searchString in title:
                 count += 1
                 resultList.append(dic_t)
-        print("found = {} occurrences".format(count))
         self.currentNumberOfSearchResults = count
         return resultList
 
@@ -161,37 +152,78 @@ class UiMainWindow(object):
         return s
 
     def testButtonClicked(self):
-        self.listWidget.clear()
+
         titlesOfResults = []
-        searchWord = self.textEdit.toPlainText()
-        results = self.getSearchResults(jsonList, searchWord)
+
+        query = self.lineEdit.text()
+        results = self.getSearchResults(jsonList, query)
         for item in results:
             title = item['title']
             titlesOfResults.append(title)
             self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
             # class to be independent.
+        self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
 
-        self.listWidget.addItems(titlesOfResults)  # I have to change this soon anyway for a table structure.
-        self.label.setText(str(self.currentNumberOfSearchResults))
+        # If there is a search result, put the items into Table Widget
+        # Logic is not yet written
+        # I will write the logic now.
+        self.updateResultsIntoTable(results)
+
+    def updateResultsIntoTable(self, results):  # Results holds all the titles
+        # Some design stuff
+        self.tbl.clear()
+        # self.tbl.setRowCount(len(results))
+        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
+        # Expected type 'Union[QBrush, QColor, GlobalColor, QGradient]', got 'int' instead
+        # brush = QtGui.QBrush()
+        # pen = QtGui.QPen(brush, QtGui.QColor(0, 0, 255, 127))
+        # self.tbl.setGridStyle(pen)
+        count = 0
+        # self.tableWidget.setItem(
+        #                 row_number, column_number, QTableWidgetItem(str(data)))
+        for key, value in self.currentSearchResult.items():
+            rowPosition = self.tbl.rowCount()
+            self.tbl.insertRow(rowPosition)  # Insert empty row
+            print(value.url)
+
+            self.tbl.setItem(0, count, QtWidgets.QTableWidgetItem(str(value.title)))
+            self.tbl.setItem(1, count, QtWidgets.QTableWidgetItem(str(value.url)))
+            self.tbl.setItem(2, count, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
+            self.tbl.setItem(3, count, QtWidgets.QTableWidgetItem(""))
+            count += 1
+        self.tbl.resizeColumnsToContents()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1031, 782)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(700, 90, 101, 31))
+        self.pushButton.setGeometry(QtCore.QRect(800, 90, 201, 31))
         self.pushButton.setObjectName("pushButton")
-        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setGeometry(QtCore.QRect(190, 90, 501, 31))
-        self.textEdit.setObjectName("textEdit")
-        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
-        self.listWidget.setGeometry(QtCore.QRect(190, 130, 621, 461))
-        self.listWidget.setObjectName("listWidget")
-        self.listWidget.itemSelectionChanged.connect(self.selectionChanged)  # event for selected Item in Listwidget
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(40, 10, 521, 17))
-        self.label.setObjectName("label")
+        self.pushButton.clicked.connect(self.testButtonClicked)
+
+        self.lblthumbnail = QtWidgets.QLabel(self.centralwidget)
+        self.lblthumbnail.setGeometry(QtCore.QRect(10, 240, 166, 94))
+        self.lblthumbnail.setScaledContents(True)
+        self.lblthumbnail.setObjectName("lblthumbnail")
+        self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
+        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 101, 20))
+        self.lblOccurrences.setObjectName("lblOccurrences")
+
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setGeometry(QtCore.QRect(190, 90, 591, 31))
+        self.lineEdit.setObjectName("lineEdit")
+
+        # Table Widget will replace the Listwidget
+        self.tbl = QtWidgets.QTableWidget(self.centralwidget)
+        self.tbl.setGeometry(QtCore.QRect(190, 130, 811, 541))
+        self.tbl.setObjectName("tbl")
+        self.tbl.setColumnCount(3)
+        #self.tbl.setRowCount(0)
+        # self.tbl.itemSelectionChanged(self.selectionChanged)
+
         self.thumbnail = QtWidgets.QLabel(self.centralwidget)
         self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
         self.thumbnail.setText("")
@@ -199,14 +231,20 @@ class UiMainWindow(object):
         self.thumbnail.setObjectName("thumbnail")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 845, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1031, 22))
         self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
-
         MainWindow.setStatusBar(self.statusbar)
-        self.pushButton.clicked.connect(self.testButtonClicked)
+
+        self.actionImport = QtWidgets.QAction(MainWindow)
+        self.actionImport.setObjectName("actionImport")
+        self.menuFile.addAction(self.actionImport)
+        self.menubar.addAction(self.menuFile.menuAction())
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -214,22 +252,22 @@ class UiMainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Search"))
-        self.label.setText(_translate("MainWindow", "Pleased To meet you, hope you guessed my name."))
+        self.lblthumbnail.setText(_translate("MainWindow", "View"))
+        self.lblOccurrences.setText(_translate("MainWindow", "occurrences"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.actionImport.setText(_translate("MainWindow", "Import"))
 
     def selectionChanged(self):
-        title = self.listWidget.currentItem().text()
+        title = self.tbl.currentItem().text()
         print(self.currentSearchResult.get(title).thumbnail)
 
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
 
-    # what we need:
-    # I can access the Entry Object now. But why is the thumbnail not included? OK Works now
-
     # TODO:
-    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )
-
+    #       - Instead of ListView, use a Table Widget ( like in prototype1.py )                 [ ]
+    #       - Thumbnail                                                                         [ ]
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

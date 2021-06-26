@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112291cd-081b-41cb-9445-87e9c67566af" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/pyQt/command.txt.save" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyQt/.command.txt.swp" beforeDir="false" afterPath="$PROJECT_DIR$/pyQt/.command.txt.swp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyQt/prototype2.py" beforeDir="false" afterPath="$PROJECT_DIR$/pyQt/prototype2.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -13,6 +15,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="ProjectId" id="1uQhSeGSFVFAKQJGgeDmQbkxrTf" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -78,9 +88,32 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="prototype2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="yt_scraping" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/pyQt" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyQt/prototype2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.extracting_data" />
+        <item itemvalue="Python.prototype2" />
         <item itemvalue="Python.prototype1" />
       </list>
     </recent_temporary>
@@ -94,7 +127,9 @@
       <option name="presentableId" value="Default" />
       <updated>1624603720558</updated>
       <workItem from="1624603750454" duration="1734000" />
-      <workItem from="1624605944483" duration="17186000" />
+      <workItem from="1624605944483" duration="19090000" />
+      <workItem from="1624634944402" duration="1144000" />
+      <workItem from="1624645677460" duration="5811000" />
     </task>
     <servers />
   </component>
@@ -118,6 +153,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/yt_scraping$prototype1.coverage" NAME="prototype1 Coverage Results" MODIFIED="1624610328732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyQt" />
-    <SUITE FILE_PATH="coverage/yt_scraping$extracting_data.coverage" NAME="extracting_data Coverage Results" MODIFIED="1624623542455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/yt_scraping$prototype2.coverage" NAME="prototype2 Coverage Results" MODIFIED="1624646133881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyQt" />
+    <SUITE FILE_PATH="coverage/yt_scraping$extracting_data.coverage" NAME="extracting_data Coverage Results" MODIFIED="1624646333523" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
