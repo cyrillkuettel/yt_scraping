@@ -2,7 +2,9 @@
 
 # run this before running download_thumbnails
 # Very Important: On Laptop I have to run "python3.5 extracting_data.py"
+import os
 
+import PyQt5.QtGui
 import urllib3
 import sys
 import re
@@ -71,7 +73,7 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
         yt_id = self.extractYoutubeIdFromUrl()
 
         if not yt_id == "ID_extraction_Failed":  # 99% of the time it's possible to craft the link for thumbnail.
-            thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/maxresdefault.jpg"
+            thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/0.jpg"
             self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
         else:
             self.thumbnail = yt_id
@@ -178,7 +180,6 @@ class UiMainWindow(object):
         for key, value in self.currentSearchResult.items():
             rowPosition = self.tbl.rowCount()
             self.tbl.insertRow(rowPosition)  # Insert empty row
-            print(value)
             self.tbl.setItem(count, 0, QtWidgets.QTableWidgetItem(str(value.title)))
             self.tbl.setItem(count, 1, QtWidgets.QTableWidgetItem(str(value.url)))
             self.tbl.setItem(count, 2, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
@@ -198,13 +199,19 @@ class UiMainWindow(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.testButtonClicked)
 
-        self.lblthumbnail = QtWidgets.QLabel(self.centralwidget)
-        self.lblthumbnail.setGeometry(QtCore.QRect(10, 240, 166, 94))
-        self.lblthumbnail.setScaledContents(True)
-        self.lblthumbnail.setObjectName("lblthumbnail")
+        self.im = QtGui.QPixmap("thumbnails/0.jpg")
+        self.im = QtWidgets.QLabel(self.centralwidget)
+        self.im.setGeometry(QtCore.QRect(10, 240, 166, 94))
+        self.im.setObjectName("thumbnailPreview")
+
+
         self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
         self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 150, 20))
         self.lblOccurrences.setObjectName("lblOccurrences")
+
+        self.lbldebug = QtWidgets.QLabel(self.centralwidget)
+        self.lbldebug.setGeometry(QtCore.QRect(400, 47, 500, 20))
+        self.lbldebug.setObjectName("lblOccurrences")
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(190, 90, 591, 31))
@@ -215,7 +222,7 @@ class UiMainWindow(object):
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
         self.tbl.setGeometry(QtCore.QRect(190, 130, 1500, 850))
         self.tbl.setObjectName("resultTable")
-        self.tbl.setColumnCount(4) # Very important, else it's crashing
+        self.tbl.setColumnCount(4)  # Very important, else it's crashing
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.tbl.itemSelectionChanged.connect(self.selectionChanged)
 
@@ -247,7 +254,6 @@ class UiMainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Search"))
-        self.lblthumbnail.setText(_translate("MainWindow", "View"))
         self.lblOccurrences.setText(_translate("MainWindow", "occurrences"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
@@ -255,9 +261,26 @@ class UiMainWindow(object):
     def selectionChanged(self):
         row = self.tbl.selectedItems()
         if len(row) <= 4:  # only trigger when 1 Row is selected (or a part thereof)
-            if len(row) == 4:
-                print(self.currentSearchResult.get(row[0].text()).thumbnail)
-        #
+            if len(row) == 4:  # selection covers all cells in row
+                thumbnailURL = self.currentSearchResult.get(row[0].text()).thumbnail
+                thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
+                thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
+
+                # TODO:
+                #    check html response for 200
+
+                file_extension = os.path.splitext(thumbnailURL)[1]
+                file_name = "0" + file_extension
+                print(file_name)
+                completeName = os.path.join(thumbnailDirectory, file_name)
+                self.lbldebug.setText(completeName)
+                r = requests.get(thumbnailURL)
+                try:
+                    with open(completeName, 'wb') as f:
+                        f.write(r.content)
+                    self.im.setPixmap(QtGui.QPixmap(completeName))
+                except:
+                    pass
 
 
 if __name__ == "__main__":
