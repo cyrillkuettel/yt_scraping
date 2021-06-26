@@ -3,8 +3,8 @@
 # run this before running download_thumbnails
 # Very Important: On Laptop I have to run "python3.5 extracting_data.py"
 import os
+from typing import Dict, Any
 
-import PyQt5.QtGui
 import urllib3
 import sys
 import re
@@ -12,11 +12,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import json
 import requests
+from WordCloudGenerator import myWordCloud
 from PIL import Image
-import pathlib
-import ctypes
 
-EntryObjects = {}  # Most Important data structure in the entire Project.
+EntryObjects = {}  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
@@ -205,6 +204,11 @@ class UiMainWindow(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.searchButtonClicked)
 
+        self.wordCloudButton = QtWidgets.QPushButton(self.centralwidget)
+        self.wordCloudButton.setGeometry(QtCore.QRect(800, 40, 201, 31))
+        self.wordCloudButton.setObjectName("wordCloudButton")
+        self.wordCloudButton.clicked.connect(self.generateWordCloud)
+
         # self.im = QtGui.QPixmap("thumbnails/0.jpg")
         self.imgLabel = QtWidgets.QLabel(self.centralwidget)
         self.imgLabel.setGeometry(QtCore.QRect(10, 240, 166, 94))
@@ -222,6 +226,7 @@ class UiMainWindow(object):
         self.lineEdit.setGeometry(QtCore.QRect(190, 90, 591, 31))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.setText("Terence")  # convenience
+        self.lineEdit.returnPressed.connect(self.pushButton.click)
 
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
@@ -259,6 +264,7 @@ class UiMainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.pushButton.setText(_translate("MainWindow", "Search"))
+        self.wordCloudButton.setText(_translate("MainWindow", "WordCloud"))
         self.lblOccurrences.setText(_translate("MainWindow", "occurrences"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
@@ -293,6 +299,9 @@ class UiMainWindow(object):
                     self.imgLabel.setPixmap(image)
                 except:
                     pass
+    def generateWordCloud(self):
+        wordCloud = myWordCloud(EntryObjects.keys())
+        wordCloud.show()
 
 
 if __name__ == "__main__":
