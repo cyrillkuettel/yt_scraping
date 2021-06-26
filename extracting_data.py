@@ -185,11 +185,12 @@ class UiMainWindow(object):
             rowPosition = self.tbl.rowCount()
             self.tbl.insertRow(rowPosition)  # Insert empty row
             print(value.url)
+            print(value.thumbnail)
 
-            self.tbl.setItem(0, count, QtWidgets.QTableWidgetItem(str(value.title)))
-            self.tbl.setItem(1, count, QtWidgets.QTableWidgetItem(str(value.url)))
-            self.tbl.setItem(2, count, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
-            self.tbl.setItem(3, count, QtWidgets.QTableWidgetItem(""))
+            self.tbl.setItem(count, 0, QtWidgets.QTableWidgetItem(str(value.title)))
+            self.tbl.setItem(count, 1, QtWidgets.QTableWidgetItem(str(value.url)))
+            self.tbl.setItem(count, 2, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
+            self.tbl.setItem(count, 3, QtWidgets.QTableWidgetItem("channel"))
             count += 1
         self.tbl.resizeColumnsToContents()
 
@@ -219,8 +220,8 @@ class UiMainWindow(object):
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
         self.tbl.setGeometry(QtCore.QRect(190, 130, 811, 541))
-        self.tbl.setObjectName("tbl")
-        self.tbl.setColumnCount(3)
+        self.tbl.setObjectName("resultTable")
+        self.tbl.setColumnCount(4)
         #self.tbl.setRowCount(0)
         # self.tbl.itemSelectionChanged(self.selectionChanged)
 
