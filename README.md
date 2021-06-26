@@ -3,7 +3,7 @@
 (This is still work in progress.) I want to be able to view my youtube history.
 And then filter by category, for example. This is the most basic concept.
 
-(Get your source file)[https://takeout.google.com/settings/takeout]
+[Get your source file](https://takeout.google.com/settings/takeout])
 
 
   ----
