@@ -12,6 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import json
 import requests
+from PIL import Image
 import pathlib
 import ctypes
 
@@ -156,6 +157,7 @@ class UiMainWindow(object):
         titlesOfResults = []
         query = self.lineEdit.text()
         results = self.getSearchResults(jsonList, query)
+        self.currentSearchResult = {}  # new Search, clear contents.
         for item in results:
             title = item['title']
             titlesOfResults.append(title)
@@ -164,18 +166,11 @@ class UiMainWindow(object):
         # print('\n'.join('{}'.format(item) for item in titlesOfResults))
         self.updateResultsIntoTable()
 
-    def updateResultsIntoTable(self):  # Results holds all the titles
-        # Write text to Lables
-        self.tbl.clear()
+    def updateResultsIntoTable(self):
+        # Write text to Labels
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
-
-        # Here I want to make it pretty
-        # Expected type 'Union[QBrush, QColor, GlobalColor, QGradient]', got 'int' instead
-        # brush = QtGui.QBrush()
-        # pen = QtGui.QPen(brush, QtGui.QColor(0, 0, 255, 127))
-        # self.tbl.setGridStyle(pen)
         count = 0
         for key, value in self.currentSearchResult.items():
             rowPosition = self.tbl.rowCount()
@@ -199,14 +194,13 @@ class UiMainWindow(object):
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(self.testButtonClicked)
 
-        self.im = QtGui.QPixmap("thumbnails/0.jpg")
-        self.im = QtWidgets.QLabel(self.centralwidget)
-        self.im.setGeometry(QtCore.QRect(10, 240, 166, 94))
-        self.im.setObjectName("thumbnailPreview")
-
+        # self.im = QtGui.QPixmap("thumbnails/0.jpg")
+        self.imgLabel = QtWidgets.QLabel(self.centralwidget)
+        self.imgLabel.setGeometry(QtCore.QRect(10, 240, 166, 94))
+        self.imgLabel.setObjectName("thumbnailPreview")
 
         self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
-        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 150, 20))
+        self.lblOccurrences.setGeometry(QtCore.QRect(190, 47, 250, 20))
         self.lblOccurrences.setObjectName("lblOccurrences")
 
         self.lbldebug = QtWidgets.QLabel(self.centralwidget)
@@ -269,16 +263,25 @@ class UiMainWindow(object):
                 # TODO:
                 #    check html response for 200
 
+                # There seems to be no sign of intelligent life in the universe
+
                 file_extension = os.path.splitext(thumbnailURL)[1]
                 file_name = "0" + file_extension
                 print(file_name)
                 completeName = os.path.join(thumbnailDirectory, file_name)
                 self.lbldebug.setText(completeName)
                 r = requests.get(thumbnailURL)
+
                 try:
                     with open(completeName, 'wb') as f:
                         f.write(r.content)
-                    self.im.setPixmap(QtGui.QPixmap(completeName))
+                    im = Image.open(completeName)
+                    width, height = im.size
+                    image = QtGui.QPixmap(completeName).scaled(width, height,
+                                                               aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
+                                                               transformMode=QtCore.Qt.FastTransformation)
+                    self.imgLabel.setMinimumSize(width, height)
+                    self.imgLabel.setPixmap(image)
                 except:
                     pass
 
