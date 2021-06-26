@@ -153,17 +153,21 @@ class UiMainWindow(object):
         s = videoUrl.replace(trimBefore, "")
         return s
 
-    def testButtonClicked(self):
+    def searchButtonClicked(self):
         titlesOfResults = []
         query = self.lineEdit.text()
-        results = self.getSearchResults(jsonList, query)
-        self.currentSearchResult = {}  # new Search, clear contents.
-        for item in results:
-            title = item['title']
-            titlesOfResults.append(title)
-            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
-            # class to be independent.
-        # print('\n'.join('{}'.format(item) for item in titlesOfResults))
+        if query == "" or query == " ":
+            self.prepareToShowAll()
+        else:
+            results = self.getSearchResults(jsonList, query)
+            self.currentSearchResult = {}  # new Search, clear contents.
+            for item in results:
+                title = item['title']
+                titlesOfResults.append(title)
+                self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
+                # class to be independent.
+            # print('\n'.join('{}'.format(item) for item in titlesOfResults))
+
         self.updateResultsIntoTable()
 
     def updateResultsIntoTable(self):
@@ -182,8 +186,15 @@ class UiMainWindow(object):
             count += 1
         self.tbl.resizeColumnsToContents()
 
+    # if the user searches for empty String, show all Content.
+    def prepareToShowAll(self):
+        for key, value in EntryObjects.items():
+            self.currentSearchResult[key] = EntryObjects.get(key)  # Copy all. This creates redundancy, but simplifies
+            # the code.
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        MainWindow.setWindowTitle("Youtube History Inspector")
         MainWindow.showMaximized()
         MainWindow.setMinimumSize(1300, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -192,7 +203,7 @@ class UiMainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(800, 90, 201, 31))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(self.testButtonClicked)
+        self.pushButton.clicked.connect(self.searchButtonClicked)
 
         # self.im = QtGui.QPixmap("thumbnails/0.jpg")
         self.imgLabel = QtWidgets.QLabel(self.centralwidget)
@@ -261,9 +272,7 @@ class UiMainWindow(object):
                 thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
 
                 # TODO:
-                #    check html response for 200
-
-                # There seems to be no sign of intelligent life in the universe
+                #    check html response for 200. In case of failure, provide alternatives
 
                 file_extension = os.path.splitext(thumbnailURL)[1]
                 file_name = "0" + file_extension
@@ -291,7 +300,7 @@ if __name__ == "__main__":
 
     # TODO:
     #       - Instead of ListView, use a Table Widget ( like in prototype1.py )                 [X]
-    #       - Thumbnail                                                                         [ ]
+    #       - Thumbnail                                                                         [X]
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
