@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="112291cd-081b-41cb-9445-87e9c67566af" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/untitled.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wordCloudPerTimeUnit.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/getSubtitles.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyQt/.command.txt.swp" beforeDir="false" afterPath="$PROJECT_DIR$/pyQt/.command.txt.swp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/thumbnails/0.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/thumbnails/0.jpg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +49,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
-  <component name="RunManager" selected="Python.ContextMenu">
+  <component name="RunManager" selected="Python.untitled">
     <configuration name="ContextMenu" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="yt_scraping" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -139,8 +138,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="untitled" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="yt_scraping" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/untitled.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.untitled" />
         <item itemvalue="Python.ContextMenu" />
         <item itemvalue="Python.extracting_data" />
         <item itemvalue="Python.prototype2" />
@@ -159,7 +181,7 @@
       <workItem from="1624603750454" duration="1734000" />
       <workItem from="1624605944483" duration="19090000" />
       <workItem from="1624634944402" duration="1144000" />
-      <workItem from="1624645677460" duration="21015000" />
+      <workItem from="1624645677460" duration="29081000" />
     </task>
     <servers />
   </component>

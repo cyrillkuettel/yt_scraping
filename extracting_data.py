@@ -173,7 +173,7 @@ class UiMainWindow(object):
         self.tbl.clear()
 
         if everything:  # show everything, no filter
-            self.prepareToShowAll() # Here's how it works: prepareToShowAll() fills the local variable
+            self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
@@ -313,33 +313,44 @@ class UiMainWindow(object):
 
     def selectionChanged(self):
         row = self.tbl.selectedItems()
-        if len(row) <= 4:  # only trigger when 1 Row is selected (or a part thereof)
-            if len(row) == 4:  # selection covers all cells in row
+        # only trigger when 1 Row is selected (or a part thereof)
+        if (len(row)) == 4:
+            tryGetTheSecondLine = self.currentSearchResult.get(row[self.tbl.columnCount() - 1].text())
+            # ensure it is actually the row. For this we can check the dictionary access. if there are more than
+            # 1 matches, it's a false alarm
+            if tryGetTheSecondLine is not None:
+                return
+
+        if len(row) == 4 or len(row) == 1:
+            # need do differentiate between selection on thumbnail and selection on the title
+            try:
                 thumbnailURL = self.currentSearchResult.get(row[0].text()).thumbnail
-                thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
-                thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
+            except:
+                return  # this will happen if the cell is anything else than a  title
 
-                # TODO:
-                #    check html response for 200. In case of failure, provide alternatives
+            thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
+            thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
 
-                file_extension = os.path.splitext(thumbnailURL)[1]
-                file_name = "0" + file_extension
-                print(file_name)
-                completeName = os.path.join(thumbnailDirectory, file_name)
-                r = requests.get(thumbnailURL)
+            # TODO:
+            #    check html response for 200. In case of failure, provide alternatives
 
-                try:
-                    with open(completeName, 'wb') as f:
-                        f.write(r.content)
-                    im = Image.open(completeName)
-                    width, height = im.size
-                    image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
-                                                               aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
-                                                               transformMode=QtCore.Qt.FastTransformation)
-                    self.imgLabel.setMinimumSize(width, height)
-                    self.imgLabel.setPixmap(image)
-                except:
-                    pass # I don't give a fuck
+            file_extension = os.path.splitext(thumbnailURL)[1]
+            file_name = "0" + file_extension
+            completeName = os.path.join(thumbnailDirectory, file_name)
+            r = requests.get(thumbnailURL)
+
+            try:
+                with open(completeName, 'wb') as f:
+                    f.write(r.content)
+                im = Image.open(completeName)
+                width, height = im.size
+                image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
+                                                           aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
+                                                           transformMode=QtCore.Qt.FastTransformation)
+                self.imgLabel.setMinimumSize(width, height)
+                self.imgLabel.setPixmap(image)
+            except:
+                pass  # I don't give a fuck
 
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
