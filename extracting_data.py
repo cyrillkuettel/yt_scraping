@@ -15,6 +15,7 @@ import json
 import requests
 from WordCloudGenerator import myWordCloud
 from PIL import Image
+from parallelDownloadThumbnails import ThumbnailDownloader
 
 EntryObjects = {}  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
@@ -176,6 +177,9 @@ class UiMainWindow(object):
         if everything:  # show everything, no filter
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines
+
+
+
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
@@ -249,18 +253,23 @@ class UiMainWindow(object):
         self.tbl.customContextMenuRequested.connect(self.generateContextMenu)
 
         self.thumbnail = QtWidgets.QLabel(self.centralwidget)
-        self.thumbnail.setGeometry(QtCore.QRect(10, 240, 170, 96))
+        self.thumbnail.setGeometry(QtCore.QRect(20, 240, 170, 96))
         self.thumbnail.setText("")
         self.thumbnail.setScaledContents(True)
         self.thumbnail.setObjectName("thumbnail")
-        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.slider = QtWidgets.QSlider(self.centralwidget)
+        self.slider.setGeometry(QtCore.QRect(20, 600, 360, 36))
+        self.slider.setOrientation(QtCore.Qt.Horizontal)
+        self.slider.setObjectName("horizontalSlider")
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1031, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         MainWindow.setMenuBar(self.menubar)
-
+        MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -347,6 +356,7 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
+    td = ThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
