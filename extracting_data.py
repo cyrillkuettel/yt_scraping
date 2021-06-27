@@ -5,6 +5,7 @@
 import os
 from typing import Dict, Any
 
+import pyperclip
 import urllib3
 import sys
 import re
@@ -275,32 +276,19 @@ class UiMainWindow(object):
         # pos is the clicked position
 
     def generateContextMenu(self, pos):
-        print(pos)
-        # Get index
-        for i in self.tbl.selectionModel().selection().indexes():
-            strSElectiontest = str(self.tbl.selectionModel().selection().first())
-            print("the Selection is " + strSElectiontest)
-            rowNum = i.row()
-
-        # If the selected row index is less than 1, the context menu will pop up
-        if rowNum < 3:
+        # print(pos)
+        row = self.tbl.selectedItems()
+        if len(row) == 1:
+            print(row)
             menu = QtWidgets.QMenu()
-            item1 = menu.addAction("Menu 1")
-            item2 = menu.addAction("Menu 2")
-            item3 = menu.addAction("Menu 3")
+            copyAction = menu.addAction("Copy Cell")
             # Make the menu display in the normal position
             screenPos = self.tbl.mapToGlobal(pos)
-
             # Click on a menu item to return, making it blocked
             action = menu.exec(screenPos)
-            if action == item1:
-                print('Select Menu 1', self.tbl.item(rowNum, 0).text())
-            if action == item2:
-                print('Select menu 2', self.tbl.item(rowNum, 0).text())
-            if action == item3:
-                print('Select menu 3', self.tbl.item(rowNum, 0).text())
-            else:
-                return
+            if action == copyAction:
+                print('Copying row {}'.format(row[0].text()))
+                pyperclip.copy(row[0].text())  # Text Copied to clipboard
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
