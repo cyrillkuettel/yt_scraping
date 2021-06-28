@@ -23,6 +23,7 @@ ydl_opts = {
     'writesubtitles': True,
     'allsubtitles': True,
     'logger': MyLogger(),
+    'output': '/home/cyrill/Desktop',
     'progress_hooks': [my_hook],
 }
 
