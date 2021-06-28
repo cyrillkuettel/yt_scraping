@@ -178,8 +178,6 @@ class UiMainWindow(object):
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines
 
-
-
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
@@ -320,34 +318,48 @@ class UiMainWindow(object):
 
         if len(row) == 4 or len(row) == 1:
             # need do differentiate between selection on thumbnail and selection on the title
+            if len(row) == 1:
+                try:
+                    entry = self.currentSearchResult.get(row[0].text())
+                    id = self.getID(entry.url)
+                    thumbnailURL = entry.thumbnail
+                    file_extension = os.path.splitext(thumbnailURL)[1]
+                    thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
+                    file_name = id + file_extension
+                    completeName = os.path.join(thumbnailDirectory, file_name)
+                    im = Image.open(completeName)
+                    width, height = im.size  # I think this is the same size always anyway
+                    image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
+                                                               aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
+                                                               transformMode=QtCore.Qt.FastTransformation)
+                    self.imgLabel.setMinimumSize(width, height)
+                    self.imgLabel.setPixmap(image)
+
+
+
+                except:
+                    print("Error. Possible that id could not be found")
+                    return
             try:
                 thumbnailURL = self.currentSearchResult.get(row[0].text()).thumbnail
             except:
                 return  # this will happen if the cell is anything else than a  title
 
+            """ 
             thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
             thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
-
-            # TODO:
-            #    check html response for 200. In case of failure, provide alternatives
-
+            
             file_extension = os.path.splitext(thumbnailURL)[1]
             file_name = "0" + file_extension
             completeName = os.path.join(thumbnailDirectory, file_name)
             r = requests.get(thumbnailURL)
-
-            try:
+           
+          
                 with open(completeName, 'wb') as f:
                     f.write(r.content)
                 im = Image.open(completeName)
                 width, height = im.size
-                image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
-                                                           aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
-                                                           transformMode=QtCore.Qt.FastTransformation)
-                self.imgLabel.setMinimumSize(width, height)
-                self.imgLabel.setPixmap(image)
-            except:
-                pass  # I don't give a fuck
+                 """
 
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
@@ -356,7 +368,9 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    td = ThumbnailDownloader(jsonList)
+    #td = ThumbnailDownloader(jsonList)
+    #  TODO: get the local files
+    #   create config file, to set boolean to true when we have downloaded the thumnbails (happens only once)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
