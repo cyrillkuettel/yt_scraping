@@ -1,3 +1,9 @@
-The command that finally worked:
+The command that could install for sudo:
  sudo -H python3 -m  pip install --upgrade youtube-dl
  and then sudo python3 getSubtitles.py
+
+But this installs it globally. Which is not what i want
+It finally worked:
+
+conda install pip==9.0.3
+

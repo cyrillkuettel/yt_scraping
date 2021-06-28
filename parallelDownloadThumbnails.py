@@ -4,14 +4,23 @@ import requests
 import threading
 import numpy as np
 import os
-from itertools import islice
+
 
 
 class ThumbnailDownloader:
     NUMBER_OF_THREADS = 8
     threads = []
 
-    def __init__(self, jsonList):  # Input is all entires
+    def __init__(self, jsonList):  # Input is all entries
+        self.number_of_thumbnails = len(jsonList)
+
+        with open(self.getConfigFile()) as file_in:
+            lines = []
+            for line in file_in:
+                lines.append(line)
+            line = lines[0] # on the first line there should be the number.
+
+
         self.jsonList = jsonList
         for i in range(self.NUMBER_OF_THREADS):
             t = threading.Thread(target=self.do_request)
@@ -23,6 +32,7 @@ class ThumbnailDownloader:
 
         for i in range(self.NUMBER_OF_THREADS):
             self.threads[i].join()
+        #
 
     def do_request(self):
         # returns the ID from a given Youtube url
@@ -59,4 +69,16 @@ class ThumbnailDownloader:
                 print("error writing File")
             print("It Worked :)")
 
+    def writeConfigFile(self):
+
+            #  TODO: check if config file already exists.
+            path = os.path.join(os.getcwd(), "config")
+            completeName = os.path.join(path, "config.txt")
+            with open(completeName, 'a') as f:
+                f.write(str(self.number_of_thumbnails) + '\n')
+
+    def getConfigFile(self):
+            path = os.path.join(os.getcwd(), "config")
+            completeName = os.path.join(path, "config.txt")
+            return completeName
 

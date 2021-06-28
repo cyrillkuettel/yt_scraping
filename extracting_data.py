@@ -12,12 +12,14 @@ import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import json
+from collections import OrderedDict
+import random
 import requests
 from WordCloudGenerator import myWordCloud
 from PIL import Image
 from parallelDownloadThumbnails import ThumbnailDownloader
 
-EntryObjects = {}  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
+EntryObjects = OrderedDict()  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
@@ -64,7 +66,7 @@ class Entry:  # Stores a single Video. information [title, url ,thumbnail, chann
         self.url = url
         self.thumbnail = thumbnail
 
-    # similar to Overloading a constructor, the pythonic way. this one we will use When inputting from raw html
+    # similar to Overloading a constructor, the pythonic way. this one we will use when inputting from raw html
     @classmethod
     def withChannelUrl(self, title, url, channelUrl):
         title = title.replace('\n', '')
@@ -129,24 +131,21 @@ def loadEachVideoAsJsonIntoArray(Lines):
 
 
 class UiMainWindow(object):
-    currentSearchResult = {}  # Dictionary of current Search results. Maps {title -> EntryObject }
+    currentSearchResult = OrderedDict()  # Maps {title -> EntryObject } (After Python3.7 OrderedDicts are the norm)
     titlesOfCurrentSearchResult = []
     currentNumberOfSearchResults = 0
 
     # TODO:
     #  -join words together, so it is possible to search multiple
     #  -is quicksort a idea, an improvment?
-    #  -make case Insensitive
-    #   -trigger Enter event
     #  -also full text search, and "nearness" of words in terms of space
+
     def getSearchResults(self, currentjsonList, s):
         searchString = ''.join(s).lower()
-        count = 0
         resultList = []
         for dic_t in currentjsonList:
             title = self.getID(dic_t["title"])
             if searchString in title.lower():
-                count += 1
                 resultList.append(dic_t)
         return resultList
 
@@ -180,6 +179,8 @@ class UiMainWindow(object):
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
         self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
+        magicNumber = random.randint(-50, 50)
+        self.slider.setSliderPosition(self.currentNumberOfSearchResults // 2 - magicNumber)
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
         count = 0
         for key, value in self.currentSearchResult.items():
@@ -225,10 +226,14 @@ class UiMainWindow(object):
         self.wordCloudButton.setObjectName("wordCloudButton")
         self.wordCloudButton.clicked.connect(self.generateWordCloud)
 
-        # self.im = QtGui.QPixmap("thumbnails/0.jpg")
         self.imgLabel = QtWidgets.QLabel(self.centralwidget)
         self.imgLabel.setGeometry(QtCore.QRect(10, 240, 166, 94))
         self.imgLabel.setObjectName("thumbnailPreview")
+
+        self.lblThumbnail = QtWidgets.QLabel(self.centralwidget)
+        self.lblThumbnail.setGeometry(QtCore.QRect(20, 560, 400, 96))
+        self.lblThumbnail.setFont(QtGui.QFont('Arial', 15))
+        self.lblThumbnail.setText("Title goes here")
 
         self.lblOccurrences = QtWidgets.QLabel(self.centralwidget)
         self.lblOccurrences.setGeometry(QtCore.QRect(490, 47, 250, 20))
@@ -251,14 +256,10 @@ class UiMainWindow(object):
         # Connect the signal request to the slot (click the right mouse button to call the method)
         self.tbl.customContextMenuRequested.connect(self.generateContextMenu)
 
-        self.thumbnail = QtWidgets.QLabel(self.centralwidget)
-        self.thumbnail.setGeometry(QtCore.QRect(20, 240, 170, 96))
-        self.thumbnail.setText("")
-        self.thumbnail.setScaledContents(True)
-        self.thumbnail.setObjectName("thumbnail")
+
 
         self.slider = QtWidgets.QSlider(self.centralwidget)
-        self.slider.setGeometry(QtCore.QRect(20, 600, 360, 36))
+        self.slider.setGeometry(QtCore.QRect(20, 610, 360, 36))
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         self.slider.setObjectName("horizontalSlider")
         self.slider.valueChanged.connect(self.sliderValueChanged)
@@ -310,11 +311,14 @@ class UiMainWindow(object):
         self.actionImport.setText(_translate("MainWindow", "Import"))
 
     def sliderValueChanged(self, value):
-        # finally I'm writing code agian. this is it. This is what I love. This is the flow.
-        # I could stay here in  this seeeeet surrender.
-        print("len = " + str(len(self.titlesOfCurrentSearchResult)))
-        print("value of slider is = " + str(value))
+        # finally I'm writing code again. this is it. This is what I love. This is the flow.
         # print(self.titlesOfCurrentSearchResult[value])
+        title = self.titlesOfCurrentSearchResult[value]
+        try:
+            self.updateThumbnailPicture(title)
+        except:
+            print("Failed to set The Thumbnail.")
+        self.lblThumbnail.setText(title)
 
     def selectionChanged(self):
         row = self.tbl.selectedItems()
@@ -330,23 +334,8 @@ class UiMainWindow(object):
             # need do differentiate between selection on thumbnail and selection on the title
             if len(row) == 1:
                 try:
-                    entry = self.currentSearchResult.get(row[0].text())
-                    id = self.getID(entry.url)
-                    thumbnailURL = entry.thumbnail
-                    file_extension = os.path.splitext(thumbnailURL)[1]
-                    thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
-                    file_name = id + file_extension
-                    completeName = os.path.join(thumbnailDirectory, file_name)
-                    im = Image.open(completeName)
-                    width, height = im.size  # I think this is the same size always anyway
-                    image = QtGui.QPixmap(completeName).scaled(width * 0.8, height * 0.8,
-                                                               aspectRatioMode=QtCore.Qt.IgnoreAspectRatio,
-                                                               transformMode=QtCore.Qt.FastTransformation)
-                    self.imgLabel.setMinimumSize(width, height)
-                    self.imgLabel.setPixmap(image)
-
-
-
+                    title = row[0].text()
+                    self.updateThumbnailPicture(title)
                 except:
                     print("Error. Possible that id could not be found")
                     return
@@ -356,6 +345,7 @@ class UiMainWindow(object):
                 return  # this will happen if the cell is anything else than a  title
 
             """ 
+            # if all else fails, we can use this.  This downloads the image with requests
             thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
             thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
             
@@ -370,7 +360,20 @@ class UiMainWindow(object):
                 im = Image.open(completeName)
                 width, height = im.size
                  """
+
     def updateThumbnailPicture(self, title):
+        entry = self.currentSearchResult.get(title)
+        file_extension = os.path.splitext(entry.thumbnail)[1]
+        file_name = self.getID(entry.url) + file_extension
+        thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")  # connect current Directory to thumbnails dir
+        completeName = os.path.join(thumbnailDirectory, file_name)
+        im = Image.open(completeName)
+        width, height = im.size  # I think this is the same size always anyway
+        image = QtGui.QPixmap(completeName).scaled(width * 0.9, height * 0.9,
+                                                   aspectRatioMode=QtCore.Qt.KeepAspectRatio,
+                                                   transformMode=QtCore.Qt.FastTransformation)
+        self.imgLabel.setMinimumSize(width, height)
+        self.imgLabel.setPixmap(image)
 
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
@@ -380,8 +383,6 @@ class UiMainWindow(object):
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
     # td = ThumbnailDownloader(jsonList)
-    #  TODO: get the local files
-    #   create config file, to set boolean to true when we have downloaded the thumnbails (happens only once)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
