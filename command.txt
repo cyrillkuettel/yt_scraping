@@ -1,0 +1,3 @@
+The command that finally worked:
+ sudo -H python3 -m  pip install --upgrade youtube-dl
+ and then sudo python3 getSubtitles.py
