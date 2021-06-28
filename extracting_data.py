@@ -18,6 +18,7 @@ import requests
 from WordCloudGenerator import myWordCloud
 from PIL import Image
 from parallelDownloadThumbnails import ThumbnailDownloader
+from multi_ThreadPool import MultiThumbnailDownloader
 
 EntryObjects = OrderedDict()  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
@@ -382,7 +383,7 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    # td = ThumbnailDownloader(jsonList)
+    td = MultiThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

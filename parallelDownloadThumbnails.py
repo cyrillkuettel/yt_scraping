@@ -1,8 +1,5 @@
-import json
-
 import requests
 import threading
-import numpy as np
 import os
 
 
