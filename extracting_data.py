@@ -383,7 +383,7 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    td = MultiThumbnailDownloader(jsonList)
+    #td = MultiThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
