@@ -130,6 +130,7 @@ def loadEachVideoAsJsonIntoArray(Lines):
 
 class UiMainWindow(object):
     currentSearchResult = {}  # Dictionary of current Search results. Maps {title -> EntryObject }
+    titlesOfCurrentSearchResult = []
     currentNumberOfSearchResults = 0
 
     # TODO:
@@ -156,7 +157,6 @@ class UiMainWindow(object):
         return s
 
     def searchButtonClicked(self):
-        titlesOfResults = []
         query = self.lineEdit.text()
         if query == "":
             self.updateResultsIntoTable(True)
@@ -165,21 +165,21 @@ class UiMainWindow(object):
         self.currentSearchResult = {}  # new Search, clear contents.
         for item in results:
             title = item['title']
-            titlesOfResults.append(title)
+            self.titlesOfCurrentSearchResult.append(title)
             self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
             # class to be independent.
-        # print('\n'.join('{}'.format(item) for item in titlesOfResults))
+        # print('\n'.join('{}'.format(item) for item in titlesOfCurrentSearchResult))
         self.updateResultsIntoTable()
 
     def updateResultsIntoTable(self, everything=False):
         self.tbl.clear()
-
         if everything:  # show everything, no filter
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines
 
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
+        self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
         count = 0
         for key, value in self.currentSearchResult.items():
@@ -189,6 +189,7 @@ class UiMainWindow(object):
             self.tbl.setItem(count, 1, QtWidgets.QTableWidgetItem(str(value.url)))
             self.tbl.setItem(count, 2, QtWidgets.QTableWidgetItem(str(value.thumbnail)))
             self.tbl.setItem(count, 3, QtWidgets.QTableWidgetItem("channel"))
+
             count += 1
         # delete possibly present blank Lines:
         self.tbl.setRowCount(len(self.currentSearchResult))
@@ -203,6 +204,7 @@ class UiMainWindow(object):
     def prepareToShowAll(self):
         for key, value in EntryObjects.items():
             self.currentSearchResult[key] = EntryObjects.get(key)  # Copy all. This creates redundancy, but simplifies
+            self.titlesOfCurrentSearchResult.append(key)
             # the code.
 
     def setupUi(self, MainWindow):
@@ -235,8 +237,7 @@ class UiMainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit.setGeometry(QtCore.QRect(490, 90, 591, 31))
         self.lineEdit.setObjectName("lineEdit")
-        self.lineEdit.setText("Terence")  # convenience
-        self.lineEdit.returnPressed.connect(self.pushButton.click)
+        self.lineEdit.returnPressed.connect(self.pushButton.click)  # Trigger return Button
 
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
@@ -260,8 +261,10 @@ class UiMainWindow(object):
         self.slider.setGeometry(QtCore.QRect(20, 600, 360, 36))
         self.slider.setOrientation(QtCore.Qt.Horizontal)
         self.slider.setObjectName("horizontalSlider")
+        self.slider.valueChanged.connect(self.sliderValueChanged)
+        self.slider.setTickPosition(0)
 
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar = QtWidgets.QMenuBar()
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1031, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
@@ -278,7 +281,7 @@ class UiMainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        #  In the beginning, show all items of course
+        #  In the beginning, show all items of course and initialize some stuff
         self.updateResultsIntoTable(everything=True)
         # pos is the clicked position
 
@@ -305,6 +308,13 @@ class UiMainWindow(object):
         self.lblOccurrences.setText(_translate("MainWindow", "occurrences"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.actionImport.setText(_translate("MainWindow", "Import"))
+
+    def sliderValueChanged(self, value):
+        # finally I'm writing code agian. this is it. This is what I love. This is the flow.
+        # I could stay here in  this seeeeet surrender.
+        print("len = " + str(len(self.titlesOfCurrentSearchResult)))
+        print("value of slider is = " + str(value))
+        # print(self.titlesOfCurrentSearchResult[value])
 
     def selectionChanged(self):
         row = self.tbl.selectedItems()
@@ -360,6 +370,7 @@ class UiMainWindow(object):
                 im = Image.open(completeName)
                 width, height = im.size
                  """
+    def updateThumbnailPicture(self, title):
 
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
@@ -368,7 +379,7 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-    #td = ThumbnailDownloader(jsonList)
+    # td = ThumbnailDownloader(jsonList)
     #  TODO: get the local files
     #   create config file, to set boolean to true when we have downloaded the thumnbails (happens only once)
 
