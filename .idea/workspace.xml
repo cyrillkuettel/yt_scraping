@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9e36e784-e253-49b3-8e01-4b56ff6aaa61" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/.config.txt.swp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/config.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.all_video_links.txt.swp" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/multi_ThreadPool-old.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/.config.txt.swp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/multi_ThreadPool.py" beforeDir="false" afterPath="$PROJECT_DIR$/multi_ThreadPool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parallelDownloadThumbnails.py" beforeDir="false" afterPath="$PROJECT_DIR$/parallelDownloadThumbnails.py" afterDir="false" />
@@ -51,7 +51,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.test">
     <configuration name="example_multiprocessing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="yt_scraping" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -74,8 +74,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="yt_scraping" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.example_multiprocessing" />
       </list>
     </recent_temporary>
@@ -90,7 +113,7 @@
       <updated>1624870288847</updated>
       <workItem from="1624870293073" duration="2698000" />
       <workItem from="1624873284049" duration="15601000" />
-      <workItem from="1624950167242" duration="3422000" />
+      <workItem from="1624950167242" duration="5457000" />
     </task>
     <servers />
   </component>
@@ -114,6 +137,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/yt_scraping$example_multiprocessing.coverage" NAME="example_multiprocessing Coverage Results" MODIFIED="1624884607947" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/yt_scraping$test.coverage" NAME="test Coverage Results" MODIFIED="1624954265167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/yt_scraping$prototype1.coverage" NAME="prototype1 Coverage Results" MODIFIED="1624610328732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyQt" />
     <SUITE FILE_PATH="coverage/yt_scraping$getSubtitles.coverage" NAME="getSubtitles Coverage Results" MODIFIED="1624784945366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/yt_scraping$prototype2.coverage" NAME="prototype2 Coverage Results" MODIFIED="1624646133881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/pyQt" />

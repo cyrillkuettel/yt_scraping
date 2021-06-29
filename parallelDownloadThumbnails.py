@@ -6,27 +6,24 @@ import os
 class ThumbnailDownloader:
     NUMBER_OF_THREADS = 8
     threads = []
-    configFileExists = False
 
-    def __init__(self, jsonList):  # Input is all entries
+    def __init__(self, jsonList):
         self.number_of_thumbnails = len(jsonList)
         self.jsonList = jsonList
 
-        if not os.path.isdir(os.getcwd() + "/config"):
+        configFolder = os.path.join(os.getcwd(), "config")
+        if not os.path.isdir(configFolder):
             os.mkdir("config")
-            configFolder = os.path.join(os.getcwd(), "config") + "/config.txt"
-            print(configFolder)
-            file = open(configFolder, "w")
+            configFile = os.path.join(configFolder, "config.txt")
+            file = open(configFile, "w")
             file.close()
-            self.configFileExists = False # not yet written
         else:
             completeName = self.getfullPathConfigFile()
             if os.path.isfile(completeName):
-                self.configFileExists = True
                 number_of_thumbnails_from_last_time = int(self.readConfigFile(completeName).strip())
                 if not self.number_of_thumbnails > number_of_thumbnails_from_last_time:
                     print("Already downloaded thumbnails")
-                    exit()
+                    return
 
         for i in range(self.NUMBER_OF_THREADS):
             t = threading.Thread(target=self.do_request)
@@ -51,9 +48,13 @@ class ThumbnailDownloader:
         while len(self.jsonList) > 0:
             data = self.jsonList.pop()
             Videourl = data['url']
-            Oldthumbnail = data['thumbnail']
+            RawThumbnail = data['thumbnail']
+            while "ID_extraction_Failed" in RawThumbnail: # only get valid IDs
+                data = self.jsonList.pop()
+                Videourl = data['url']
+                RawThumbnail = data['thumbnail']
 
-            thumbnailURL = Oldthumbnail.replace("maxresdefault", "0")
+            thumbnailURL = RawThumbnail.replace("maxresdefault", "0")
             file_extension = os.path.splitext(thumbnailURL)[1]
             ID = getID(Videourl)
             file_name = ID + file_extension
@@ -67,14 +68,15 @@ class ThumbnailDownloader:
                 }
                 try:
                     r = requests.get(thumbnailURL, headers=headers)
+                    if r.status_code == 200:
+                        try:
+                            with open(completeName, 'wb') as f:
+                                f.write(r.content)
+                        except:
+                            print("error writing thumbnail")
+                        print("It Worked :)")
                 except:
-                    print("Requests Failed!")
-                try:
-                    with open(completeName, 'wb') as f:
-                        f.write(r.content)
-                except:
-                    print("error writing thumbnail")
-                print("It Worked :)")
+                    print("Requests Failed! thumbnailuRL = " + thumbnailURL)
             else:
                 pass
                # print("thumbnail exists already. No need to download. ")
@@ -94,5 +96,5 @@ class ThumbnailDownloader:
 
     def getfullPathConfigFile(self):
         configFolder = os.path.join(os.getcwd(), "config")
-        completeName = configFolder + "/config.txt"
+        completeName = os.path.join(configFolder, "config.txt")
         return completeName

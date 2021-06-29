@@ -388,9 +388,9 @@ if __name__ == "__main__":
     #  first get the config file finally working....
     #  Then we can pick a feature from the feature list
 
-    #td = MultiThumbnailDownloader(jsonList)
+    td = MultiThumbnailDownloader(jsonList)
 
-    tdOld = ThumbnailDownloader(jsonList)
+    # tdOld = ThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
