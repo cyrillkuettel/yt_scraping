@@ -1,7 +1,6 @@
 #!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
 
 
-
 import os
 from Data_Storage_Structure import Entry
 import pyperclip
@@ -17,46 +16,16 @@ from PIL import Image
 from parallelDownloadThumbnails import ThumbnailDownloader
 from multi_ThreadPool import MultiThumbnailDownloader
 
-EntryObjects = OrderedDict() # Most Important data structure in the entire Project.
+EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
+EntrySet = set()
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
 
 
-
-def find_channel_and_title_in_div(filename):
-    # TODO:
-    #   This function wants as an input the raw html data.
-    #   this is quite buggy and does nothing. Getting the channel has not been accomplished so far.
-    #   instead of printing, write the output to file.
-    soup = BeautifulSoup(open(filename), "html.parser")
-    channel = "https://www.youtube.com/channel/"  # to match the string
-    print("{")
-    for div in soup.findAll('div', attrs={'class': 'content-cell'}):
-        count = 0
-        for element in div.findAll('a',
-                                   href=True):  # there are multiple <a> Elements in Div. Find the one with "channel"
-            channelURL = element['href']  # channel link
-            # print(element['href'])
-            if channel in channelURL:
-                # print("found channel : {}".format(channelURL))
-                count += 1
-            else:  # in that case, it links to a Video
-                try:
-                    title = element.contents[0]
-                    if "https://www.youtube.com" not in title:  # avoid deleted Videos
-                        VidUrl = element['href']
-                except Exception as e:
-                    pass
-            entry = Entry(title, VidUrl, channelURL)
-            # EntryObjects.append(entry)  # this might not be necessary. In fact, you could just write the output to file.
-            print(vars(entry))
-    print("}")  # close the json object
-
-
 def loadEachVideoAsJsonIntoArray(Lines):
-    jsonList = []
+    jsonInnerList = []
     for line in Lines:
         data = json.loads(line)  # successfully loaded a json objet.
         title = data['title']
@@ -65,10 +34,11 @@ def loadEachVideoAsJsonIntoArray(Lines):
         try:
             entry = Entry(title, videoUrl, thumbnail)
             EntryObjects[title] = entry
-            jsonList.append(data)
+            EntrySet.add(title)
+            jsonInnerList.append(data)
         except Exception as e:
-            print("{} {}".format("Error in loadEachVideoAsJsonIntoArray while creating Entry Object. ", e))
-    return jsonList
+            print("{} {}".format("Error in loadEachVideoAsJsonIntoArray during initial phase. ", e))
+    return jsonInnerList
 
 
 class UiMainWindow(object):
@@ -78,23 +48,34 @@ class UiMainWindow(object):
 
     # TODO:
     #  -join words together, so it is possible to search multiple
-    #  -is quicksort a idea, an improvment?
+    #  -is quicksort a idea, an improvement?
     #  -also full text search, and "nearness" of words in terms of space
 
     def getSearchResults(self, currentjsonList, s):
         searchString = ''.join(s).lower()
         resultList = []
         for dic_t in currentjsonList:
-            title = self.getID(dic_t["title"])
+            title = dic_t["title"]
             if searchString in title.lower():
                 resultList.append(dic_t)
         return resultList
+
+    # def getSearchResultsFaster(self, s):
 
     # returns the ID from a given Youtube url
     def getID(self, videoUrl):
         trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
         s = videoUrl.replace(trimBefore, "")
         return s
+
+    def searchTextChanged(self, value):
+        results = self.getSearchResults(jsonList, value)
+        self.currentSearchResult = {}  # new Search, clear contents.
+        for item in results:
+            title = item['title']
+            self.titlesOfCurrentSearchResult.append(title)
+            self.currentSearchResult[title] = EntryObjects.get(title)
+        self.updateResultsIntoTable()
 
     def searchButtonClicked(self):
         query = self.lineEdit.text()
@@ -115,13 +96,11 @@ class UiMainWindow(object):
         self.tbl.clear()
         if everything:  # show everything, no filter
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
-            # currentSearchResult with all 12k Lines
+            # currentSearchResult with all 12k Lines.
 
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
-        self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
-        magicNumber = random.randint(-50, 50)
-        self.slider.setSliderPosition(self.currentNumberOfSearchResults // 2 - magicNumber)
+
         self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
         count = 0
         for key, value in self.currentSearchResult.items():
@@ -184,6 +163,7 @@ class UiMainWindow(object):
         self.lineEdit.setGeometry(QtCore.QRect(490, 90, 591, 31))
         self.lineEdit.setObjectName("lineEdit")
         self.lineEdit.returnPressed.connect(self.pushButton.click)  # Trigger return Button
+        self.lineEdit.textChanged.connect(self.searchTextChanged)
 
         # Table Widget will replace the Listwidget
         self.tbl = QtWidgets.QTableWidget(self.centralwidget)
@@ -191,13 +171,11 @@ class UiMainWindow(object):
         self.tbl.setObjectName("resultTable")
         self.tbl.setColumnCount(4)  # Very important, else it's crashing
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
-        self.tbl.itemSelectionChanged.connect(self.selectionChanged)
+        self.tbl.itemSelectionChanged.connect(self.tableSelectionChanged)
         # Allow Context menu
         self.tbl.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         # Connect the signal request to the slot (click the right mouse button to call the method)
         self.tbl.customContextMenuRequested.connect(self.generateContextMenu)
-
-
 
         self.slider = QtWidgets.QSlider(self.centralwidget)
         self.slider.setGeometry(QtCore.QRect(20, 610, 360, 36))
@@ -225,6 +203,9 @@ class UiMainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         #  In the beginning, show all items of course and initialize some stuff
         self.updateResultsIntoTable(everything=True)
+        self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
+        magicNumber = random.randint(-50, 50)  # so it doesn't always show the same Picture.
+        self.slider.setSliderPosition(self.currentNumberOfSearchResults // 2 - magicNumber)
         # pos is the clicked position
 
     def generateContextMenu(self, pos):
@@ -256,12 +237,12 @@ class UiMainWindow(object):
         # print(self.titlesOfCurrentSearchResult[value])
         title = self.titlesOfCurrentSearchResult[value]
         try:
-            self.updateThumbnailPicture(title)
+            self.updateThumbnailPicture_fromLocalFile(title)
+            self.lblThumbnail.setText(title)
         except:
             print("Failed to set The Thumbnail. Title is " + title)
-        self.lblThumbnail.setText(title)
 
-    def selectionChanged(self):
+    def tableSelectionChanged(self):
         row = self.tbl.selectedItems()
         # only trigger when 1 Row is selected (or a part thereof)
         if (len(row)) == 4:
@@ -276,7 +257,8 @@ class UiMainWindow(object):
             if len(row) == 1:
                 try:
                     title = row[0].text()
-                    self.updateThumbnailPicture(title)
+                    self.updateThumbnailPicture_fromLocalFile(title)
+                    self.lblThumbnail.setText(title)
                 except:
                     print("Error. Possible that id could not be found")
                     return
@@ -285,24 +267,7 @@ class UiMainWindow(object):
             except:
                 return  # this will happen if the cell is anything else than a  title
 
-            """ 
-            # if all else fails, we can use this.  This downloads the image with requests
-            thumbnailURL = thumbnailURL.replace("maxresdefault", "0")
-            thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")
-            
-            file_extension = os.path.splitext(thumbnailURL)[1]
-            file_name = "0" + file_extension
-            completeName = os.path.join(thumbnailDirectory, file_name)
-            r = requests.get(thumbnailURL)
-           
-          
-                with open(completeName, 'wb') as f:
-                    f.write(r.content)
-                im = Image.open(completeName)
-                width, height = im.size
-                 """
-
-    def updateThumbnailPicture(self, title):
+    def updateThumbnailPicture_fromLocalFile(self, title):
         entry = self.currentSearchResult.get(title)
         file_extension = os.path.splitext(entry.thumbnail)[1]
         file_name = self.getID(entry.url) + file_extension
@@ -324,7 +289,6 @@ class UiMainWindow(object):
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
     td = MultiThumbnailDownloader(jsonList)
-
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()

@@ -2,12 +2,14 @@ import json
 import requests
 import pathlib
 import sys
+from Data_Storage_Structure import Entry
+from bs4 import BeautifulSoup
+# This is mostly obsolete. Nostalgia could be the the word
 
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
 # I think his class is essentially only used in the initial phase, when the history file is first opened.
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
-
 
 def loadEachVideoAsJsonIntoArray(Lines):
     jsonList = []
@@ -74,6 +76,36 @@ def ForEachTitleDoesContainWord(jsonList, searchString):
         if searchString in title:
             count += 1
     return count
+
+def find_channel_and_title_in_div(filename):
+    # TODO:
+    #   This function wants as an input the raw html data.
+    #   this is quite buggy and does nothing. Getting the channel has not been accomplished so far.
+    #   instead of printing, write the output to file.
+    soup = BeautifulSoup(open(filename), "html.parser")
+    channel = "https://www.youtube.com/channel/"  # to match the string
+    print("{")
+    for div in soup.findAll('div', attrs={'class': 'content-cell'}):
+        count = 0
+        for element in div.findAll('a',
+                                   href=True):  # there are multiple <a> Elements in Div. Find the one with "channel"
+            channelURL = element['href']  # channel link
+            # print(element['href'])
+            if channel in channelURL:
+                # print("found channel : {}".format(channelURL))
+                count += 1
+            else:  # in that case, it links to a Video
+                try:
+                    title = element.contents[0]
+                    if "https://www.youtube.com" not in title:  # avoid deleted Videos
+                        VidUrl = element['href']
+                except Exception as e:
+                    pass
+            entry = Entry(title, VidUrl, channelURL)
+            # EntryObjects.append(entry)  # this might not be necessary. In fact, you could just write the output to
+            # file.
+            print(vars(entry))
+    print("}")  # close the json object
 
 
 if __name__ == "__main__":
