@@ -1,14 +1,11 @@
 #!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
 
-# run this before running download_thumbnails
-# Very Important: On Laptop I have to run "python3.5 extracting_data.py"
-import os
-from typing import Dict, Any
 
+
+import os
+from Data_Storage_Structure import Entry
 import pyperclip
-import urllib3
 import sys
-import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import json
@@ -20,69 +17,12 @@ from PIL import Image
 from parallelDownloadThumbnails import ThumbnailDownloader
 from multi_ThreadPool import MultiThumbnailDownloader
 
-EntryObjects = OrderedDict()  # type: Dict[Any, Any] # Most Important data structure in the entire Project.
+EntryObjects = OrderedDict() # Most Important data structure in the entire Project.
 json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
+
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
 
-verlauf_trimmed = '../verlauf/verlauf_trimmed.html'
-test_filename_div = '../verlauf/test_filename_div.html'
-link_file = 'link_file.txt'
-
-
-# noinspection PyInterpreter
-class Entry:  # Stores a single Video. information [title, url ,thumbnail, channelUrl] is added to attributes.
-    # What I don't like is that we are using the Entry class for two use cases right now.
-    # In the process we are creating a lot of redundancy
-    title = ""
-    url = ""
-    thumbnail = ""
-    channelUrl = ""
-
-    def __str__(self):
-        return "Entry Object: Title: {} Url:  {}, thumbnailUrl : {}".format(self.title, self.url, self.thumbnail)
-
-    def extractYoutubeIdFromUrl(self):
-        failed = False
-        try:
-            url_data = urllib3.parse_url(self.url)
-        except Exception as e:
-            failed = True
-        try:
-            query = urllib3.parse_url.parse_qs(url_data.query)
-        except Exception as e:
-            failed = True
-
-        try:
-            yt_id = query["v"][0]  # ?? who knows what this does, one can only guess
-        except Exception as e:
-            failed = True
-        if not failed:
-            return yt_id
-        else:
-            return "ID_extraction_Failed"
-
-    def __init__(self, title, url, thumbnail):
-        self.title = title
-        self.url = url
-        self.thumbnail = thumbnail
-
-    # similar to Overloading a constructor, the pythonic way. this one we will use when inputting from raw html
-    @classmethod
-    def withChannelUrl(self, title, url, channelUrl):
-        title = title.replace('\n', '')
-        title = re.sub(' +', ' ', title)  # remove whitespace in the middle
-        self.title = ''.join(title).encode('utf-8').strip()
-        self.url = ''.join(url).encode('utf-8').strip()
-        self.channelUrl = ''.join(channelUrl).encode('utf-8').strip()
-
-        yt_id = self.extractYoutubeIdFromUrl()
-
-        if not yt_id == "ID_extraction_Failed":  # 99% of the time it's possible to craft the link for thumbnail.
-            thumbnail_string = "http://img.youtube.com/vi/" + yt_id + "/0.jpg"
-            self.thumbnail = ''.join(thumbnail_string).encode('utf-8').strip()
-        else:
-            self.thumbnail = yt_id
 
 
 def find_channel_and_title_in_div(filename):
@@ -318,7 +258,7 @@ class UiMainWindow(object):
         try:
             self.updateThumbnailPicture(title)
         except:
-            print("Failed to set The Thumbnail.")
+            print("Failed to set The Thumbnail. Title is " + title)
         self.lblThumbnail.setText(title)
 
     def selectionChanged(self):
@@ -383,14 +323,8 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
-
-    # TODO: (today)
-    #  first get the config file finally working....
-    #  Then we can pick a feature from the feature list
-
     td = MultiThumbnailDownloader(jsonList)
 
-    # tdOld = ThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
