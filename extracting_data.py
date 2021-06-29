@@ -17,8 +17,9 @@ from parallelDownloadThumbnails import ThumbnailDownloader
 from multi_ThreadPool import MultiThumbnailDownloader
 
 EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
-EntrySet = set()
-json_file_name = "15k.json"  # in the future, this will be a command line argument args[]
+EntrySet = set()  # All titles (lowercase), created each time the program starts
+
+json_file_name = "15k.json"  # in the future, this will be a function where the user selects the file.
 
 file1 = open(json_file_name, 'r')
 Lines = file1.readlines()
@@ -46,51 +47,24 @@ class UiMainWindow(object):
     titlesOfCurrentSearchResult = []
     currentNumberOfSearchResults = 0
 
-    # TODO:
-    #  -join words together, so it is possible to search multiple
-    #  -is quicksort a idea, an improvement?
-    #  -also full text search, and "nearness" of words in terms of space
-
-    def getSearchResults(self, currentjsonList, s):
-        searchString = ''.join(s).lower()
-        resultList = []
-        for dic_t in currentjsonList:
-            title = dic_t["title"]
-            if searchString in title.lower():
-                resultList.append(dic_t)
-        return resultList
-
-    # def getSearchResultsFaster(self, s):
-
-    # returns the ID from a given Youtube url
-    def getID(self, videoUrl):
-        trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
-        s = videoUrl.replace(trimBefore, "")
-        return s
-
-    def searchTextChanged(self, value):
-        results = self.getSearchResults(jsonList, value)
-        self.currentSearchResult = {}  # new Search, clear contents.
-        for item in results:
-            title = item['title']
-            self.titlesOfCurrentSearchResult.append(title)
-            self.currentSearchResult[title] = EntryObjects.get(title)
-        self.updateResultsIntoTable()
-
     def searchButtonClicked(self):
         query = self.lineEdit.text()
         if query == "":
             self.updateResultsIntoTable(True)
             return
-        results = self.getSearchResults(jsonList, query)
-        self.currentSearchResult = {}  # new Search, clear contents.
-        for item in results:
-            title = item['title']
-            self.titlesOfCurrentSearchResult.append(title)
-            self.currentSearchResult[title] = EntryObjects.get(title)  # this might seem unnecessary, but I want the
-            # class to be independent.
-        # print('\n'.join('{}'.format(item) for item in titlesOfCurrentSearchResult))
+        self.searchTextChanged(query)
+
+    def searchTextChanged(self, query):
+        self.getSearchResults(query)
         self.updateResultsIntoTable()
+
+    def getSearchResults(self, s):
+        self.currentSearchResult = {}  # new Search, clear contents.
+        searchString = ''.join(s).lower()
+        for title in EntrySet:
+            if searchString in title.lower():
+                self.titlesOfCurrentSearchResult.append(title)
+                self.currentSearchResult[title] = EntryObjects.get(title)
 
     def updateResultsIntoTable(self, everything=False):
         self.tbl.clear()
@@ -98,10 +72,7 @@ class UiMainWindow(object):
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines.
 
-        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
-        self.currentNumberOfSearchResults = len(self.currentSearchResult)
 
-        self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
         count = 0
         for key, value in self.currentSearchResult.items():
             rowPosition = self.tbl.rowCount()
@@ -112,6 +83,11 @@ class UiMainWindow(object):
             self.tbl.setItem(count, 3, QtWidgets.QTableWidgetItem("channel"))
 
             count += 1
+
+
+        self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
+        self.currentNumberOfSearchResults = len(self.currentSearchResult)
+        self.lblOccurrences.setText("Found {} Occurrences for query".format(self.currentNumberOfSearchResults))
         # delete possibly present blank Lines:
         self.tbl.setRowCount(len(self.currentSearchResult))
         # determine gap between columns
@@ -122,7 +98,7 @@ class UiMainWindow(object):
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
         header.resizeSection(1, 370)
 
-    def prepareToShowAll(self):
+    def prepareToShowAll(self): # Gonna remove this function as well, how useless
         for key, value in EntryObjects.items():
             self.currentSearchResult[key] = EntryObjects.get(key)  # Copy all. This creates redundancy, but simplifies
             self.titlesOfCurrentSearchResult.append(key)
@@ -202,7 +178,7 @@ class UiMainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         #  In the beginning, show all items of course and initialize some stuff
-        self.updateResultsIntoTable(everything=True)
+        #self.updateResultsIntoTable(everything=True)
         self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
         magicNumber = random.randint(-50, 50)  # so it doesn't always show the same Picture.
         self.slider.setSliderPosition(self.currentNumberOfSearchResults // 2 - magicNumber)
@@ -284,6 +260,12 @@ class UiMainWindow(object):
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
         wordCloud.show()
+
+    # returns the ID from a given Youtube url
+    def getID(self, videoUrl):
+        trimBefore = videoUrl[0:32]  # Is equal to "https://www.youtube.com/watch?v="
+        s = videoUrl.replace(trimBefore, "")
+        return s
 
 
 if __name__ == "__main__":
