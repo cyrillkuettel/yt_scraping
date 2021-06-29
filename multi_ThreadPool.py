@@ -2,10 +2,9 @@ from multiprocessing.pool import ThreadPool
 from time import time
 import requests
 import os
-
-
 class MultiThumbnailDownloader:
     CPUS = os.cpu_count()
+
     def __init__(self, jsonList):
         self.jsonList = jsonList
         self.number_of_thumbnails = len(jsonList)

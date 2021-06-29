@@ -383,7 +383,14 @@ class UiMainWindow(object):
 
 if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
+
+    # TODO: (today)
+    #  first get the config file finally working....
+    #  Then we can pick a feature from the feature list
+
     #td = MultiThumbnailDownloader(jsonList)
+
+    tdOld = ThumbnailDownloader(jsonList)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
