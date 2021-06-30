@@ -2,6 +2,7 @@ import requests
 import threading
 import os
 
+# It's highly unlikely I will ever use this again.
 
 class ThumbnailDownloader:
     NUMBER_OF_THREADS = 8

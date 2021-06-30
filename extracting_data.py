@@ -110,7 +110,7 @@ class UiMainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowTitle("Youtube History Inspector")
-        MainWindow.showMaximized()
+        #MainWindow.showMaximized()
         MainWindow.setMinimumSize(1300, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -262,8 +262,11 @@ class UiMainWindow(object):
             print(e)
 
     def generateWordCloud(self):
-        print("button trigger")
-        gui.show()
+        wordCloudGui.injectList(EntryObjects.keys())
+        wordCloudGui.show()
+        wordCloudGui.generateWordClouds()
+
+
 
     # returns the ID from a given Youtube url
     def getID(self, videoUrl):
@@ -281,5 +284,5 @@ if __name__ == "__main__":
     ui = UiMainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
-    gui = Window()
+    wordCloudGui = Window()
     sys.exit(app.exec_())
