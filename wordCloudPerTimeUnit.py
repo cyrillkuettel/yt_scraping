@@ -1,51 +1,69 @@
 import sys
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QDialog, QApplication, QPushButton, QVBoxLayout
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from PyQt5 import QtCore, QtWidgets
+import random
 
-class Canvas(FigureCanvas):
-    def __init__(self, parent):
-        fig, self.ax = plt.subplots(figsize=(5, 4), dpi=200)
-        super().__init__(fig)
-        #self.setParent(parent)
-
-        """ 
-        Matplotlib Script
-        """
-        t = np.arange(0.0, 2.0, 0.01)
-        s = 1 + np.sin(2 * np.pi * t)
-
-        self.ax.plot(t, s)
-
-        self.ax.set(xlabel='time (s)', ylabel='voltage (mV)',
-                    title='About as simple as it gets, folks')
-        self.ax.grid()
+from PIL import Image
+from wordcloud import WordCloud, STOPWORDS
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1600, 800)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.horizontalSlider = QtWidgets.QSlider(self.centralwidget)
-        self.horizontalSlider.setGeometry(QtCore.QRect(20, 390, 581, 16))
-        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
-        self.horizontalSlider.setObjectName("horizontalSlider")
-        MainWindow.setCentralWidget(self.centralwidget)
 
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+class Window(QDialog):
+    comment_words = ''
+    stopwords = set(STOPWORDS)
 
-        # chart = Canvas(self)
+    def __init__(self,  parent=None):
+        super(Window, self).__init__(parent)
 
+        self.imgLabel = QtWidgets.QLabel()
+        # self.imgLabel.setGeometry(QtCore.QRect(10, 240, 166, 94))
+        self.imgLabel.setObjectName("thumbnailPreview")
+        self.button = QtWidgets.QPushButton()
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+        # self.button.clicked.connect(self.generateWordCloud)
+
+        self.slider = QtWidgets.QSlider()
+        self.slider.setOrientation(QtCore.Qt.Horizontal)
+        # self.canvas = FigureCanvas(plt.figure())
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.slider)
+        layout.addWidget(self.button)
+        layout.addWidget(self.imgLabel)
+        # layout.addWidget(self.canvas)
+
+        self.setLayout(layout)
+
+    def generateWordClouds(self, titleList):
+        for val in titleList:
+            val = str(val)
+            tokens = val.split()
+            # Converts each token into lowercase
+            for i in range(len(tokens)):
+                tokens[i] = tokens[i].lower()
+            self.comment_words += " ".join(tokens) + " "
+
+        wordcloud = WordCloud(width=800, height=800,
+                              background_color='white',
+                              stopwords=self.stopwords,
+                              min_font_size=10).generate(self.comment_words)
+
+        tempFilename = "test_img.png"
+        wordcloud.to_file(tempFilename)
+        self.updateImage(tempFilename)
+
+    def updateImage(self, path):
+        im = Image.open(path)
+        width, height = im.size  # I think this is the same size always anyway
+        image = QtGui.QPixmap(path).scaled(width, height,
+                                           aspectRatioMode=QtCore.Qt.KeepAspectRatio,
+                                           transformMode=QtCore.Qt.FastTransformation)
+        self.imgLabel.setMinimumSize(width, height)
+        self.imgLabel.setPixmap(image)
+

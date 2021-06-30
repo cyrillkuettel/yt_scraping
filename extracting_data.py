@@ -1,4 +1,4 @@
-#!/home/cyrill/anaconda3/envs/youtube_history_extractor/bin/python
+#!/home/cyrill/anaconda3/envs/yt_scraper/bin/python
 
 
 import os
@@ -11,10 +11,13 @@ import json
 from collections import OrderedDict
 import random
 import requests
-from WordCloudGenerator import myWordCloud
+# from WordCloudGenerator import myWordCloud
+from wordCloudPerTimeUnit import Window
 from PIL import Image
 from parallelDownloadThumbnails import ThumbnailDownloader
 from multi_ThreadPool import MultiThumbnailDownloader
+from subprocess import call
+
 
 EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
 EntrySet = set()  # All titles (lowercase), created each time the program starts
@@ -259,8 +262,8 @@ class UiMainWindow(object):
             print(e)
 
     def generateWordCloud(self):
-        wordCloud = myWordCloud(EntryObjects.keys())
-        wordCloud.show()
+        print("button trigger")
+        gui.show()
 
     # returns the ID from a given Youtube url
     def getID(self, videoUrl):
@@ -273,13 +276,10 @@ if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
     td = MultiThumbnailDownloader(jsonList)
 
-    # TODO for today
-    #  get rid of the jsonList
-    #  select a feature, maybe WordCloud(time), maybe fullTextSearch
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = UiMainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    gui = Window()
     sys.exit(app.exec_())

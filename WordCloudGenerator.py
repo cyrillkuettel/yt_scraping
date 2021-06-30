@@ -24,6 +24,7 @@ class myWordCloud:
                               background_color='white',
                               stopwords=self.stopwords,
                               min_font_size=10).generate(self.comment_words)
+
         # plot the WordCloud image
         plt.figure(figsize=(8, 8), facecolor=None)
         plt.imshow(wordcloud)
