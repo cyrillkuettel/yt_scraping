@@ -55,6 +55,8 @@ class UiMainWindow(object):
         self.searchTextChanged(query)
 
     def searchTextChanged(self, query):
+        if len(query) == 1:  # should optimize performance
+            return
         self.getSearchResults(query)
         self.updateResultsIntoTable()
 
@@ -72,7 +74,6 @@ class UiMainWindow(object):
             self.prepareToShowAll()  # Here's how it works: prepareToShowAll() fills the local variable
             # currentSearchResult with all 12k Lines.
 
-
         count = 0
         for key, value in self.currentSearchResult.items():
             rowPosition = self.tbl.rowCount()
@@ -83,7 +84,6 @@ class UiMainWindow(object):
             self.tbl.setItem(count, 3, QtWidgets.QTableWidgetItem("channel"))
 
             count += 1
-
 
         self.tbl.setHorizontalHeaderLabels(["Title", "Url", "Thumbnail", "Channel"])
         self.currentNumberOfSearchResults = len(self.currentSearchResult)
@@ -98,7 +98,7 @@ class UiMainWindow(object):
         header.setSectionResizeMode(1, QtWidgets.QHeaderView.Interactive)
         header.resizeSection(1, 370)
 
-    def prepareToShowAll(self): # Gonna remove this function as well, how useless
+    def prepareToShowAll(self):  # Gonna remove this function as well, how useless
         for key, value in EntryObjects.items():
             self.currentSearchResult[key] = EntryObjects.get(key)  # Copy all. This creates redundancy, but simplifies
             self.titlesOfCurrentSearchResult.append(key)
@@ -178,7 +178,7 @@ class UiMainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         #  In the beginning, show all items of course and initialize some stuff
-        #self.updateResultsIntoTable(everything=True)
+        self.updateResultsIntoTable(everything=True)
         self.slider.setRange(0, self.currentNumberOfSearchResults - 1)  # range = the number of items, Zero-based
         magicNumber = random.randint(-50, 50)  # so it doesn't always show the same Picture.
         self.slider.setSliderPosition(self.currentNumberOfSearchResults // 2 - magicNumber)
@@ -220,11 +220,9 @@ class UiMainWindow(object):
 
     def tableSelectionChanged(self):
         row = self.tbl.selectedItems()
-        # only trigger when 1 Row is selected (or a part thereof)
-        if (len(row)) == 4:
+        if (len(row)) == 4:  # 4 could also be vertical, not horizontal
             tryGetTheSecondLine = self.currentSearchResult.get(row[self.tbl.columnCount() - 1].text())
-            # ensure it is actually the row. For this we can check the dictionary access. if there are more than
-            # 1 matches, it's a false alarm
+            # if there are more than 1 matches, it's a false alarm
             if tryGetTheSecondLine is not None:
                 return
 
@@ -233,29 +231,32 @@ class UiMainWindow(object):
             if len(row) == 1:
                 try:
                     title = row[0].text()
+                    # update the slider position
+                    index = self.tbl.currentRow()
+                    self.slider.blockSignals(True)
+                    self.slider.setSliderPosition(index)
+                    self.slider.blockSignals(False)
                     self.updateThumbnailPicture_fromLocalFile(title)
                     self.lblThumbnail.setText(title)
-                except:
-                    print("Error. Possible that id could not be found")
-                    return
-            try:
-                thumbnailURL = self.currentSearchResult.get(row[0].text()).thumbnail
-            except:
-                return  # this will happen if the cell is anything else than a  title
+                except Exception as e:
+                    print(e)
 
     def updateThumbnailPicture_fromLocalFile(self, title):
         entry = self.currentSearchResult.get(title)
         file_extension = os.path.splitext(entry.thumbnail)[1]
         file_name = self.getID(entry.url) + file_extension
         thumbnailDirectory = os.path.join(os.getcwd(), "thumbnails")  # connect current Directory to thumbnails dir
-        completeName = os.path.join(thumbnailDirectory, file_name)
-        im = Image.open(completeName)
-        width, height = im.size  # I think this is the same size always anyway
-        image = QtGui.QPixmap(completeName).scaled(width * 0.9, height * 0.9,
-                                                   aspectRatioMode=QtCore.Qt.KeepAspectRatio,
-                                                   transformMode=QtCore.Qt.FastTransformation)
-        self.imgLabel.setMinimumSize(width, height)
-        self.imgLabel.setPixmap(image)
+        try:
+            completeName = os.path.join(thumbnailDirectory, file_name)
+            im = Image.open(completeName)
+            width, height = im.size  # I think this is the same size always anyway
+            image = QtGui.QPixmap(completeName).scaled(width * 0.9, height * 0.9,
+                                                       aspectRatioMode=QtCore.Qt.KeepAspectRatio,
+                                                       transformMode=QtCore.Qt.FastTransformation)
+            self.imgLabel.setMinimumSize(width, height)
+            self.imgLabel.setPixmap(image)
+        except Exception as e:
+            print(e)
 
     def generateWordCloud(self):
         wordCloud = myWordCloud(EntryObjects.keys())
