@@ -7,3 +7,4 @@ It finally worked:
 
 conda install pip==9.0.3
 
+youtube-dl --skip-download --write-auto-sub --sub-format srt 'https://www.youtube.com/watch?v=NgUATs2bx7w'

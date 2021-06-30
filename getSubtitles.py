@@ -29,4 +29,4 @@ ydl_opts = {
 
 if __name__ == "__main__":
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(['http://www.youtube.com/watch?v=sS9QBLrezuY'])
+        ydl.download(['https://www.youtube.com/watch?v=sS9QBLrezuY'])
