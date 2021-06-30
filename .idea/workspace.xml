@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9e36e784-e253-49b3-8e01-4b56ff6aaa61" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/..gitignore.swp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/extracting_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/extracting_data.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/parallelDownloadThumbnails.py" beforeDir="false" afterPath="$PROJECT_DIR$/parallelDownloadThumbnails.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testFigure.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test_img.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test_img_0.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test_img_1.png" beforeDir="false" />
@@ -169,7 +165,7 @@
       <workItem from="1624950167242" duration="12927000" />
       <workItem from="1624969047977" duration="226000" />
       <workItem from="1625048025101" duration="9392000" />
-      <workItem from="1625058907757" duration="4036000" />
+      <workItem from="1625058907757" duration="6179000" />
     </task>
     <servers />
   </component>

@@ -9,6 +9,7 @@ from wordcloud import WordCloud, STOPWORDS
 
 
 class Window(QDialog):
+    numberOfChunks = 6  # split the list
     comment_words = ''
     wordcloudImageFolder = "wordclouds"
     stopwords = set(STOPWORDS)
@@ -20,6 +21,10 @@ class Window(QDialog):
         self.imgLabel.setObjectName("thumbnailPreview")
         self.slider = QtWidgets.QSlider()
         self.slider.setOrientation(QtCore.Qt.Horizontal)
+        self.slider.setRange(0, self.numberOfChunks)
+        self.slider.setSliderPosition(self.numberOfChunks)
+        self.slider.valueChanged.connect(self.sliderValueChanged)
+
         layout = QVBoxLayout()
 
         layout.addWidget(self.imgLabel)
@@ -43,12 +48,10 @@ class Window(QDialog):
         if not os.path.isdir(self.wordcloudImageFolder):
             os.mkdir(self.wordcloudImageFolder)
 
-
-        numberOfChunks = 6  # split the list
-        sizeOfChunk = len(self.wordList) // numberOfChunks
+        sizeOfChunk = len(self.wordList) // self.numberOfChunks
         nestedList = chunks(self.wordList, sizeOfChunk)
         count = -1
-
+        finalWordCloudFileName = ""
         for chunk in nestedList:
             count += 1
             self.comment_words = ""  # reset the String to avoid accumulation
@@ -68,8 +71,14 @@ class Window(QDialog):
 
             wordcloud.to_file(finalWordCloudFileName)
             self.updateImage(finalWordCloudFileName)
-
             print("Generated a wordCloud")
+
+        self.updateImage(finalWordCloudFileName)
+
+    def sliderValueChanged(self, value):
+        wordCloudFileName = "test_img_{}.png".format(value)
+        finalWordCloudFileName = os.path.join(self.wordcloudImageFolder, wordCloudFileName)
+        self.updateImage(finalWordCloudFileName)
 
     def updateImage(self, path):
         im = Image.open(path)
