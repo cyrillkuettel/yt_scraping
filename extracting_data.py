@@ -273,6 +273,10 @@ if __name__ == "__main__":
     jsonList = loadEachVideoAsJsonIntoArray(Lines)
     td = MultiThumbnailDownloader(jsonList)
 
+    # TODO for today
+    #  get rid of the jsonList
+    #  select a feature, maybe WordCloud(time), maybe fullTextSearch
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = UiMainWindow()
