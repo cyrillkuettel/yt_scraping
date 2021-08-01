@@ -18,6 +18,7 @@ from parallelDownloadThumbnails import ThumbnailDownloader
 from multi_ThreadPool import MultiThumbnailDownloader
 from subprocess import call
 
+# run: python3.5 extracting_data.py
 
 EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
 EntrySet = set()  # All titles (lowercase), created each time the program starts
