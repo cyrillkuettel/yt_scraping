@@ -20,6 +20,10 @@ from subprocess import call
 
 # run: python3.5 extracting_data.py
 
+
+
+#TODO:  deal with paths.  use pathlib. 15.json will else throw error if this script is run from somewhere else
+#https://stackoverflow.com/questions/3718657/how-do-you-properly-determine-the-current-script-directory
 EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
 EntrySet = set()  # All titles (lowercase), created each time the program starts
 
