@@ -24,6 +24,9 @@ from subprocess import call
 
 #TODO:  deal with paths.  use pathlib. 15.json will else throw error if this script is run from somewhere else
 #https://stackoverflow.com/questions/3718657/how-do-you-properly-determine-the-current-script-directory
+# DISPLAY CHANNEL LOGO WHEN SELECTING VIDEO.
+# It would be a nice little feature, if the slider would adapt, when you are skimming through the search results
+
 EntryObjects = OrderedDict()  # Most Important data structure in the entire Project.
 EntrySet = set()  # All titles (lowercase), created each time the program starts
 

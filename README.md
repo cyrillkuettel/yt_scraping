@@ -19,3 +19,9 @@ search functionality, progressively getting more started on exploring the wastne
 				-ContextMenu when a item is selected
 				- Best Idea I had in a week: Create WordCloud as A function of Time.
 
+
+Other ideas: Use ("flags") which the user can group this videos,
+into meaningful categories.
+
+Slider does only partially work for search results. 
+Full-text search could be an interesting adventure. 
