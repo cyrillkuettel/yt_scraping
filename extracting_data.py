@@ -21,9 +21,8 @@ from subprocess import call
 # run: python3.5 extracting_data.py
 
 
-
-#TODO:  deal with paths.  use pathlib. 15.json will else throw error if this script is run from somewhere else
-#https://stackoverflow.com/questions/3718657/how-do-you-properly-determine-the-current-script-directory
+# TODO:  deal with paths.  use pathlib. 15.json will else throw error if this script is run from somewhere else
+# https://stackoverflow.com/questions/3718657/how-do-you-properly-determine-the-current-script-directory
 # DISPLAY CHANNEL LOGO WHEN SELECTING VIDEO.
 # It would be a nice little feature, if the slider would adapt, when you are skimming through the search results
 
@@ -118,7 +117,7 @@ class UiMainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowTitle("Youtube History Inspector")
-        #MainWindow.showMaximized()
+        # MainWindow.showMaximized()
         MainWindow.setMinimumSize(1300, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -273,8 +272,6 @@ class UiMainWindow(object):
         wordCloudGui.injectList(EntryObjects.keys())
         wordCloudGui.show()
         wordCloudGui.generateWordClouds()
-
-
 
     # returns the ID from a given Youtube url
     def getID(self, videoUrl):

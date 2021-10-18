@@ -32,6 +32,9 @@ def find_channel_and_title_in_div(filename):
     #   This function wants as an input the raw html data.
     #   this is quite buggy and does nothing. Getting the channel has not been accomplished so far.
     #   instead of printing, write the output to file.
+    #   UPDATE: 18.10: The Wiedergabeverlauf.html is fucking 250000 lines of code.
+    #   Strategy for this issue: Easy would be to just split the html into multiple chunks, then do multiprocessing
+
 
     soup = BeautifulSoup(open(filename), "html.parser")
     channel = "https://www.youtube.com/channel/"  # to match the string
