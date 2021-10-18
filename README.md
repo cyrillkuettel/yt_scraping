@@ -1,27 +1,29 @@
 # Scrape your Youtube Profile
-
-(This is still work in progress.) I want to be able to view my youtube history.
-And then filter by category, for example. This is the most basic concept.
-
-[Get your source file](https://takeout.google.com/settings/takeout])
+**WARNING! This is still in development.**
 
 
-  ----
- At a deeper lever, we will install _specific_
-search functionality, progressively getting more started on exploring the wastness of the json.
-  ----
 
- Search Ideologies:
-                        -  Subtitles
-                        - as well as the videos metadata very precisely. In a elegantt way, we will provide software, as well as the geographical landscape
-                        of this particular software.
-			# Ideas
-				-ContextMenu when a item is selected
-				- Best Idea I had in a week: Create WordCloud as A function of Time.
+It's a youtube history viewer, with some pretty diagramms basically. 
+I'm writing this application to be able to instantly search my youtube history. 
+This is all possible thanks to [Google Takeout](https://takeout.google.com/settings/takeout), which enables users to export data from their google accounts. 
 
 
-Other ideas: Use ("flags") which the user can group this videos,
-into meaningful categories.
+yt_scraping is planned to include the features
+- [x] search instantly
+- [x] generate pretty Wordclouds
+- [x] automatically and concurrently download the thumbnails
+- [ ] advanced text search 
+- [ ] approximate string matching [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
+- [ ] full text search (based on the subtitles)
+- [ ] read the 10mb html hitory file with a little bit of parallelism/multiprocessing
 
-Slider does only partially work for search results. 
-Full-text search could be an interesting adventure. 
+
+
+
+(these are not the selling points, but rather milestones of the development)
+
+
+![screnshot](img/screenshot.png)
+
+
+
