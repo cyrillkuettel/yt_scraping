@@ -1,8 +1,8 @@
 # Scrape your Youtube Profile
 **This is still in development.**
 
-It's a youtube history viewer, with some pretty diagramms basically. 
-I'm writing this application to be able to instantly search my youtube history. Also there may be advanced filters in the future, right now it's just a history viewer, with instant search. 
+It's a youtube history viewer.
+I'm writing this application to be able to instantly search my youtube history. Also there may be advanced filters in the future, right now it's just a history viewer. There is a wordcloud feature, which is a nice way to visualize your interests.  
 This is all possible thanks to [Google Takeout](https://takeout.google.com/settings/takeout), which enables users to export data from their google accounts. 
 
 ![screnshot](img/screenshot.png)
