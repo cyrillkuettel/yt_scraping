@@ -9,22 +9,26 @@ This is all possible thanks to [Google Takeout](https://takeout.google.com/setti
 
 
 # How to run
-1. Install conda and clone the environment 
+1. Clone this project
+
+2. Install conda and clone the environment 
 ```
 conda env create --file environment.yml
 conda env activate <name-of-environent>
 
 ```
-2. Run extracting_data.py using python3.5
+3. The command to start the GUI is: 
 ```
 python3.5 extracting_data.py
 ```
+Note that is has to be python3.5
 
 
 yt_scraping is planned to include the features
 - [x] search instantly
 - [x] generate pretty Wordclouds
 - [x] automatically and concurrently download the thumbnails
+- [ ] Display Only Liked Videos
 - [ ] advanced text search with filters based on likes, comments, total views, ratio etc
 - [ ] approximate string matching [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
 - [ ] full text search (based on the subtitles)
