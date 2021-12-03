@@ -1,7 +1,7 @@
 # Scrape your Youtube Profile
 **This is still in development.**
 
-It's a youtube history viewer.
+It's a youtube history viewer. Essentially a way of organizing information.
 I'm writing this application to be able to instantly search my youtube history. Also there may be advanced filters in the future, right now it's just a history viewer. There is a wordcloud feature, which is a nice way to visualize your interests.  
 This is all possible thanks to [Google Takeout](https://takeout.google.com/settings/takeout), which enables users to export data from their google accounts. 
 
@@ -37,6 +37,9 @@ yt_scraping is planned to include the features
 
 (these are not the selling points, but rather milestones of the development)
 
+
+## TODO:
+- make code more pythonic (don't need count variables for example)
 
 
 
