@@ -8,7 +8,7 @@ This is all possible thanks to [Google Takeout](https://takeout.google.com/setti
 ![screnshot](img/screenshot.png)
 
 
-# How to run
+# How to install this project
 ### Note: I have testet this only on Ubuntu 18.04 with conda as the python environment. 
 1. Clone this project
 
