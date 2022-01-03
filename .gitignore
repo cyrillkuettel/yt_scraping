@@ -2,3 +2,4 @@ thumbnails/*
 .idea/workspace.xml
 test_img_*
 wordclouds/*
+config/config.txt
