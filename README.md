@@ -37,10 +37,3 @@ yt_scraping is planned to include the features
 
 (these are not the selling points, but rather milestones of the development)
 
-
-## TODO:
-- make code more pythonic (don't need count variables for example)
-
-
-
-
